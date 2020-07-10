@@ -57,16 +57,18 @@ public class CreateMapper {
     private void createMapper(List<EntidadesPojo> entidadesList) {
 
         for (EntidadesPojo entidad : entidadesList) {
-            String nameOfClass = entidad.getNombreClase() + "Mapper";
-            try {
-                if (entidad.getIsEntity()) {
-                    Thread.sleep(relantizar);
-                    String escritos = metods(entidad).toString();
-                    Thread.sleep(relantizar);
-                    createArchivoController(escritos, nameOfClass);
+            if (entidad.getIsEntity()) {
+                String nameOfClass = entidad.getNombreClase() + "Mapper";
+                try {
+                    if (entidad.getIsEntity()) {
+                        Thread.sleep(relantizar);
+                        String escritos = metods(entidad).toString();
+                        Thread.sleep(relantizar);
+                        createArchivoController(escritos, nameOfClass);
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             }
         }
     }
@@ -83,6 +85,8 @@ public class CreateMapper {
             sb.append(this.createTituloClass(entidad));
             Thread.sleep(relantizar);
             sb.append(this.createEntityToPojo(entidad));
+            Thread.sleep(relantizar);
+            sb.append(this.createPojoToEntity(entidad));
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -90,16 +94,18 @@ public class CreateMapper {
         return sb;
     }
 
-    private StringBuilder createImport(EntidadesPojo entidad) {
+    private StringBuilder createImport(EntidadesPojo entidads) {
 
         StringBuilder sb1 = new StringBuilder();
         sb1.append("package " + paquete + ".mapper;" + "\r\n");
-        sb1.append("import " + paquete + ".entitys." + entidad.getNombreClase() + ";" + "\r\n");
-        sb1.append("import " + paquete + ".pojos." + entidad.getNombreClase() + ";" + "\r\n");
-        for (RelacionPojo relacion : entidad.getRelaciones()) {
-            sb1.append("import " + paquete + "." + entidad.getPaquete() + "." + relacion.getNameClassRelacion() + ";" + "\r\n");
+        sb1.append("import " + paquete + ".entitys." + entidads.getNombreClase() + ";" + "\r\n");
+        sb1.append("import " + paquete + ".pojo." + entidads.getNombreClase() + "Pojo"+";" + "\r\n");
+
+        for (RelacionPojo relacion : entidads.getRelaciones()) {
+            sb1.append("import " + paquete + "." + entidads.getPaquete() + "." + relacion.getNameClassRelacion() + ";" + "\r\n");
+         //   String[] clavePojo = pojo.getNombreClase().split("Pojo");
+            sb1.append("import " + paquete + ".pojo."+ relacion.getNameClassRelacion() +"Pojo"+ ";" + "\r\n");
         }
-        // seguro que requiere mas logica para que genere los import bien
 
         sb1.append("import org.springframework.web.bind.annotation.*;" + "\r\n");
         sb1.append("import org.springframework.stereotype.Component;" + "\r\n");
@@ -113,50 +119,53 @@ public class CreateMapper {
 
     private StringBuilder createTituloClass(EntidadesPojo entidad) {
         StringBuilder sb2 = new StringBuilder();
-        sb2.append("@Component\r\n");
-        sb2.append("public class " + entidad.getNombreClase() + "Mapper {\r\n");
+        sb2.append("    @Component\r\n");
+        sb2.append("    public class " + entidad.getNombreClase() + "Mapper {\r\n");
         sb2.append("\r\n");
-        // se puede separar de este encabezado para generar adecuadamente en otro metodo
+
         for (RelacionPojo relacion : entidad.getRelaciones()) {
-            sb2.append("@Autowired" + "\r\n");
-            sb2.append("private " + entidad.getNombreClase() + entidad.getNombreClase().toLowerCase() + ";" + "\r\n");
+            String nombreMapper = (relacion.getNameClassRelacion() + "Mapper");
+            sb2.append("      @Autowired" + "\r\n");
+            sb2.append("      private " + nombreMapper+" "+ nombreMapper.toLowerCase() + ";" + "\r\n");
             sb2.append("\r\n");
         }
-//le falta mejorar esta logica no esta bien
         return sb2;
     }
 
 
-    private StringBuilder createEntityToPojo(EntidadesPojo entidad) {
+    private StringBuilder createEntityToPojo(EntidadesPojo entity) {
         StringBuilder sb3 = new StringBuilder();
-        for (EntidadesPojo entity : toEntidad) {
+
             for (EntidadesPojo pojo : toPojos) {
                 String[] clavePojo = pojo.getNombreClase().split("Pojo");
+
                 if (entity.getNombreClase().equals(clavePojo[0])) {
-                    sb3.append(" public " + entity.getNombreClase() + " PojoToEntity(" + entity.getNombreClase() + " entity, " + pojo.getNombreClase() + " Pojo) {");
+                    sb3.append("        public " + entity.getNombreClase() + " PojoToEntity(" + pojo.getNombreClase() + " pojo) {" + "\r\n");
+                    sb3.append( "           "+entity.getNombreClase() + " entity = new "+entity.getNombreClase()+"();" + "\r\n");
 
                     if (entity.getRelaciones().size() > 0) {
                         for (RelacionPojo relacion : entity.getRelaciones()) {
                             String relacionClase = relacion.getNameClassRelacion();
                             String relacionName = relacion.getNameRelacion();
-                            sb3.append("List<" + relacionClase + "> list" + relacionName + " = new ArrayList<" + relacionClase + ">();" + "\r\n");
+                            sb3.append("        List<" + relacionClase + "> list" + relacionName + " = new ArrayList<" + relacionClase + ">();" + "\r\n");
                         }
                     }
 
                     if (entity.getAtributos().size() > 0) {
                         for (AtributoPojo atributo : entity.getAtributos()) {
-                            String atributoName = atributo.getAtributoName().substring(0, 1).toUpperCase() + atributo.getAtributoName().substring(1);
+                            String atributoNameSetGet = atributo.getAtributoName().substring(0, 1).toUpperCase()
+                                    + atributo.getAtributoName().substring(1).toLowerCase();
                             String atrubutoObjeto = atributo.getAtributoName().toLowerCase();
-                            sb3.append("entity.set" + atributoName + "(pojo.get" + atributoName + ");" + "\r\n");
+                            sb3.append("            entity.set" + atributoNameSetGet + "(pojo.get" + atributoNameSetGet + "());" + "\r\n");
                         }
                     }
 
                     if (entity.getRelaciones().size() > 0) {
                         for (RelacionPojo relacion : entity.getRelaciones()) {
-                            String nombreMapper = (relacion.getNameClassRelacion() + "Mapper").toLowerCase();
+                            String nombreMapper = (relacion.getNameClassRelacion() + "Mapper");
 
                             if (relacion.getRelation().equals("OneToOne")) {
-                                sb3.append("entity.set" + relacion.getNameRelacion() + "(" + nombreMapper + ".PojoToEntity(pojo.get"
+                                sb3.append("        entity.set" + relacion.getNameRelacion() + "(" + nombreMapper.toLowerCase() + ".PojoToEntity(pojo.get"
                                         + relacion.getNameRelacion() + "()));" + "\r\n");
                             }
 
@@ -164,20 +173,87 @@ public class CreateMapper {
                                     || relacion.getRelation().equals("ManyToMany")) {
                                 String relacionClase = relacion.getNameClassRelacion();
                                 String relacionName = relacion.getNameRelacion();
-                                sb3.append(" for (" + relacionClase + " " + relacionName + "pojo" + " : pojo.get" + relacionName + "()) {" + "\r\n");
-                                sb3.append("list" + relacionName + ".add(" + nombreMapper + ".PojoToEntity(" + relacionName + "pojo" + "));" + "\r\n");
-                                sb3.append("}" + "\r\n");
-                                sb3.append("entity.set" + relacionName + "(" + "list" + relacionName + ");" + "\r\n");
+                                sb3.append("        for (" + relacionClase + "Pojo" + " " + relacionName + "pojo" + " : pojo.get" + relacionName + "()) {" + "\r\n");
+                                sb3.append("            list" + relacionName + ".add(" + nombreMapper.toLowerCase() + ".PojoToEntity(" + relacionName + "pojo" + "));" + "\r\n");
+                                sb3.append("        }" + "\r\n");
+                                sb3.append("        entity.set" + relacionName + "(" + "list" + relacionName + ");" + "\r\n");
                             }
                         }
                     }
                 }
             }
-        }
-        sb3.append("return entity;" + "\r\n");
-        sb3.append(" }" + "\r\n");
+        sb3.append("            return entity;" + "\r\n");
+        sb3.append("        }" + "\r\n");
+        sb3.append("\r\n");
         return sb3;
     }
+
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++
+   // AHORA CREAR EL METODO DE ENTITY TO POJO
+//++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+    private StringBuilder createPojoToEntity(EntidadesPojo entity) {
+        StringBuilder sb3 = new StringBuilder();
+        for (EntidadesPojo pojo : toPojos) {
+            String[] clavePojo = pojo.getNombreClase().split("Pojo");
+
+            if (entity.getNombreClase().equals(clavePojo[0])) {
+                sb3.append("\r\n");
+                sb3.append("    public " + pojo.getNombreClase() + " entityToPojo(" + entity.getNombreClase() + " entity) {" + "\r\n");
+                sb3.append("        "+ pojo.getNombreClase() + " pojo = new "+pojo.getNombreClase()+"();" + "\r\n");
+
+                if (entity.getRelaciones().size() > 0) {
+                    for (RelacionPojo relacion : pojo.getRelaciones()) {
+                        String relacionClase = relacion.getNameClassRelacion();
+                        String relacionNameList = relacion.getNameRelacion();
+                        sb3.append("        List<" + relacionClase + "> list" + relacionNameList + " = new ArrayList<" + relacionClase + ">();" + "\r\n");
+                    }
+                }
+
+                if (entity.getAtributos().size() > 0) {
+                    for (AtributoPojo atributo : pojo.getAtributos()) {
+                        String atributoNameSetGet = atributo.getAtributoName().substring(0, 1).toUpperCase()
+                                + atributo.getAtributoName().substring(1).toLowerCase();
+                        String atrubutoObjeto = atributo.getAtributoName().toLowerCase();
+                        sb3.append("        pojo.set" + atributoNameSetGet + "(entity.get" + atributoNameSetGet + "());" + "\r\n");
+                    }
+                }
+                sb3.append("\r\n");
+
+                if (entity.getRelaciones().size() > 0) {
+                    for (RelacionPojo relacion : pojo.getRelaciones()) {
+
+                        String[] EntidadClase =  relacion.getNameClassRelacion().split("Pojo");
+                        String relacionClase = EntidadClase[0];
+                        String nombreMapper = (relacionClase + "Mapper");
+                        String[] Entidadname =  relacion.getNameRelacion().split("Pojo");;
+                        String relacionName = Entidadname[0];
+                        String relacionNameList = relacion.getNameRelacion();
+
+                        if (relacion.getRelation().equals("OneToOne")) {
+                            sb3.append("pojo.set" + relacion.getNameRelacion() + "(" + nombreMapper.toLowerCase() + ".entityToPojo(entity.get"
+                                    + relacion.getNameRelacion() + "()));" + "\r\n");
+                        }
+
+                        if (relacion.getRelation().equals("OneToMany") || relacion.getRelation().equals("ManyToOne")
+                                || relacion.getRelation().equals("ManyToMany")) {
+
+                            sb3.append("        for (" + relacionClase + " " + relacionName + "entity" + " : entity.get" + relacionName + "()) {" + "\r\n");
+                            sb3.append("            list" + relacionNameList + ".add(" + nombreMapper.toLowerCase() + ".entityToPojo(" + relacionName +"entity"+" ));" + "\r\n");
+                            sb3.append("        }" + "\r\n");
+                            sb3.append("        pojo.set" + relacionName + "(" + "list" + relacionNameList + ");" + "\r\n");
+                        }
+                    }
+                }
+            }
+        }
+        sb3.append("            return pojo;" + "\r\n");
+        sb3.append("        }" + "\r\n");
+        sb3.append("\r\n");
+        return sb3;
+    }
+
 
 
     private void createArchivoController(String escrito, String nameOfClass) {

@@ -15,8 +15,6 @@ import com.alejandro.ana.services.GenerarInstanciasService;
 public class GenerarInstanciasServiceImpl implements GenerarInstanciasService  {
 
 
-
-
 	@Autowired
 	private Creador creador;
 	
@@ -41,7 +39,8 @@ public class GenerarInstanciasServiceImpl implements GenerarInstanciasService  {
 	@Autowired
 	private  CreateControlles createControlles;
 
-
+	@Autowired
+	private CreateMapper createMapper;
 
 	protected static final Log logger = LogFactory.getLog(GenerarInstanciasServiceImpl.class);
 	
@@ -62,7 +61,7 @@ public class GenerarInstanciasServiceImpl implements GenerarInstanciasService  {
 		Integer tipoDatabase= archivo.getTipoDatabase();// oracle = 2, Mysql = 1, server = 3.
 		String context = archivo.getContext();
 		Boolean databaseTest = archivo.getDatabaseTest(); // usar databade test y Database
-// creando carpetas bases del proyecto		
+
 		logger.info("Creando carpetas Bases del Proyecto");
 
 
@@ -102,9 +101,8 @@ public class GenerarInstanciasServiceImpl implements GenerarInstanciasService  {
 		logger.info("Finalizando la Creando Archivos Base");
 		
 //creando clases del proyecto
-		
 		logger.info("Creando Archivos de clases para el proyecto");
-		
+
 		creacionDeClases.startCreacionDeClases(archivo, creador);
 		creacionDeClases.createClass2();
 		
@@ -116,8 +114,9 @@ public class GenerarInstanciasServiceImpl implements GenerarInstanciasService  {
 		repositoriesServices.startCreacion(archivo, creador);
 		servicesImplimet.startCreacionImplement(archivo, creador);
 		createControlles.startCreacionControlles(archivo, creador);
+		createMapper.initiarCreateMapper(archivo, creador);
 
-		logger.info("Finalizo Creando Archivos de repositorios, servicios proyecto");
+		logger.info("Finalizo Creando Archivos de repositorios, servicios proyecto, mappers");
 		
 //**********************************************************************************
 		
@@ -127,22 +126,18 @@ public class GenerarInstanciasServiceImpl implements GenerarInstanciasService  {
 		anadirCarpeta.folderzip(creador.getProyectoName(), creador.getDireccionDeCarpeta(), creador.getProyectoName());
 		
 		logger.info("Finalizo el Añadido del proyecto a zip");
-		
-		
+
+
 		//guardando proyecto en base de datos y alistando para la descarga
 		logger.info("Guardando Proyecto, Limpiando Cahe");
 		
 		return anadirCarpeta.salveProyecto(creador.getDireccionDeCarpeta(), creador.getProyectoName());
-		
+
 	}
 
 
 	@Override
-	public void generarArchivos(ArchivoBaseDatosPojo archivo) {
-
-
-		
-	}
+	public void generarArchivos(ArchivoBaseDatosPojo archivo) { }
 	
 	
 }
