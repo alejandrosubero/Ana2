@@ -47,8 +47,7 @@ public class GenerarInstanciasServiceImpl implements GenerarInstanciasService  {
 
 
 	protected static final Log logger = LogFactory.getLog(GenerarInstanciasServiceImpl.class);
-	
-	
+
 	@Override
 	public boolean ejecutaBase(ArchivoBaseDatosPojo archivo) throws Exception {
 				
@@ -68,12 +67,10 @@ public class GenerarInstanciasServiceImpl implements GenerarInstanciasService  {
 
 		logger.info("Creando carpetas Bases del Proyecto");
 
-
 		creador.setProyectoName(proyectoName);
 		creador.setPackageNames(paquete);
 		creador.setDescription(descripcion);
 		creador.setContext(context);
-
 
 		logger.info("Ejecutando creador.valoresPackage() ");
 		
@@ -87,16 +84,15 @@ public class GenerarInstanciasServiceImpl implements GenerarInstanciasService  {
  // creando archivos base	
 		
 		logger.info("Creando Archivos Base");
-		
+
 		archivosBase.iniciarArchivosBase(creador, databaseName, tipoDatabase, nativeMysql, databaseTest);
 		archivosBase.createApplicationTests();
 		archivosBase.createApplication();
 		archivosBase.servletInitializer();
-		
+
 		logger.info("iniciando pomxmlCreator.iniciarPomxml");
 
 		pomxmlCreator.iniciarPomxml(creador, seguridad, dataBase, tipoDatabase, javaVersion, databaseTest);
-
 		archivosBase.createApplicationPropeties();
 		archivosBase.createBanner();
 		archivosBase.createApplicationController();
@@ -114,7 +110,10 @@ public class GenerarInstanciasServiceImpl implements GenerarInstanciasService  {
 		
 //***************************************************************************
 		logger.info("Creando Archivos de repositorios, servicios  proyecto");
-		
+
+		// NOTA LE FALTA LOGICA EN ESTE PUNTO PARA DIFERENCIAR LA CREACION DE LOS DIVERSOS COMPONENTES NUEVOS
+		// PARA L ARQUITECTURA CON POJOS (MAPPER, VALIDATION, Y CONTROLADOR_CAPA_POJO.
+
 		repositoriesServices.startCreacion(archivo, creador);
 		servicesImplimet.startCreacionImplement(archivo, creador);
 		createControlles.startCreacionControlles(archivo, creador);
@@ -125,24 +124,21 @@ public class GenerarInstanciasServiceImpl implements GenerarInstanciasService  {
 		
 //**********************************************************************************
 		
-		// añadiendo proyecto a zip 
-		
+		// añadiendo proyecto a zip
 		logger.info("Añadiendo proyecto a zip");
+
 		anadirCarpeta.folderzip(creador.getProyectoName(), creador.getDireccionDeCarpeta(), creador.getProyectoName());
 		
 		logger.info("Finalizo el Añadido del proyecto a zip");
-
 
 		//guardando proyecto en base de datos y alistando para la descarga
 		logger.info("Guardando Proyecto, Limpiando Cahe");
 		
 		return anadirCarpeta.salveProyecto(creador.getDireccionDeCarpeta(), creador.getProyectoName());
-
 	}
 
 
 	@Override
 	public void generarArchivos(ArchivoBaseDatosPojo archivo) { }
-	
-	
+
 }

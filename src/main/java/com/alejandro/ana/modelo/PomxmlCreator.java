@@ -16,7 +16,6 @@ public class PomxmlCreator {
     private Creador creador;
     private String proyectoName;
     private int relantizar = 300;
-
     private Boolean wihtSegurity; //spring segurity o no
     private Boolean dataBase; // true o false
     private Integer tipoDatabase; // oracle = 2, Mysql = 1, h2 = 3.
@@ -24,7 +23,6 @@ public class PomxmlCreator {
     private Boolean databaseTest;
 
     protected static final Log logger = LogFactory.getLog(PomxmlCreator.class);
-
 
     public void iniciarPomxml(Creador creadors, Boolean wihtSegurityp, Boolean dataBasep,
                               Integer tipoDatabasep, Double javaVersion, Boolean databaseTest) {
@@ -50,8 +48,6 @@ public class PomxmlCreator {
         StringBuilder sb = new StringBuilder();
         try {
             Thread.sleep(relantizar);
-
-
 
             sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n"
                     + "<project xmlns=\"http://maven.apache.org/POM/4.0.0\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\r\n"
@@ -158,7 +154,6 @@ public class PomxmlCreator {
                             "         </dependency>"+ "\r\n" );
             }
 
-
             sb.append("<!-- https://mvnrepository.com/artifact/io.springfox/springfox-swagger-ui -->" + "\r\n" +
                     "       <dependency>" + "\r\n" +
                     "           <groupId>io.springfox</groupId>" + "\r\n" +
@@ -209,15 +204,10 @@ public class PomxmlCreator {
 
             sb.append( "\r\n");
             sb.append( "</project>"+ "\r\n" );
-
             String escrito = sb.toString();
-
             String nombreArchivos = "pom.xml";
-
             String direccion = creador.getDireccionDeCarpeta() + proyectoName;
-
             creador.crearArchivo(direccion, escrito, nombreArchivos);
-
         } catch (Exception e) {
             logger.error(e);
         }
@@ -342,13 +332,9 @@ public class PomxmlCreator {
                     + "</project>\r\n";
 
             String direccion = creador.getDireccionDeCarpeta() + proyectoName;
-
             creador.crearArchivo(direccion, escrito, nombreArchivo);
-
         } catch (Exception e) {
             logger.error(e);
         }
-
     }
-
 }

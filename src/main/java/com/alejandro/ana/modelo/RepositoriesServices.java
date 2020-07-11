@@ -24,17 +24,13 @@ public class RepositoriesServices {
 	// private String description;
 	private String proyectoName;
 	private String packageNames;
-
 	private List<EntidadesPojo> entidades;
 	private Creador creador;
-
 	private String barra = "";
 	private int relantizar = 100;
 	private int relantizar2 = 300;
 
 	protected static final Log logger = LogFactory.getLog(RepositoriesServices.class);
-	
-	
 
 	public void startCreacion(ArchivoBaseDatosPojo archivo, Creador creadors) {
 
@@ -46,7 +42,6 @@ public class RepositoriesServices {
 		
 		try {
 			this.create();
-			
 		} catch (InterruptedException e) {
 			logger.error(" ERROR : " + e);
 		//	e.printStackTrace();
@@ -54,84 +49,51 @@ public class RepositoriesServices {
 	}
 
 
-	
-	
-	
 	private void create() throws InterruptedException {
 
 		logger.info("inicia la creacion de la clase ");
-
 		if (this.entidades.size() > 0) {
-
 			for (EntidadesPojo entidad : this.entidades) {
-				
 				Thread.sleep(relantizar );
-				
 				if(entidad.getIsEntity()) {
-
-
 					logger.info("Inicia la creacion de Repository ===>" + " Repository"+ entidad.getNombreClase());
-
 					this.createRepository(entidad);
-					
 					logger.info("Inicia la creacion de Servicio ===>" + " Repository"+ entidad.getNombreClase());
-					
 					Thread.sleep(relantizar );
 					this.createService(entidad);
-									
 				}
 			}
 		}
-
 	}
 
-	
-	
-	
-	
-	
+
 	private void createFileClass(String entidad_getNombreClase, String entidad_paquete, StringBuilder sb) throws InterruptedException {
 
 		Thread.sleep(relantizar);
-
 		String nameFile = entidad_getNombreClase + ".java";
-
 	//	sb.append("}\r\n");
 		String singleString = sb.toString();
-
 		String direction = creador.getDireccionDeCarpeta() + proyectoName + barra + "src" + barra + "main" + barra
 				+ "java" + barra + creador.getCom() + barra + creador.getPackageNames1() + barra + creador.getArtifact()
 				+ barra + entidad_paquete;
-
 		creador.crearArchivo(direction, singleString, nameFile);
 		logger.info("Finalizo la creacion de CreateFileClass" + "  NOMBRE = " + entidad_getNombreClase);
-
-
-		System.out.println("===nombre de archivo===============>>>>>>>>>>>>>>>>>>>  "+nameFile);
-		System.out.println("====direccion============>>>>>>>>>>>>>>>>>>>  "+ direction);
-
 	}
 	
 	
-	
-	
+
 	private  void createRepository(EntidadesPojo entidad ) throws InterruptedException {
-		
 		StringBuilder sb1 = new StringBuilder("\r\n");
 		List <AtributoPojo> listAtributos = entidad.getAtributos();
-		
 		String nameOfClass =entidad.getNombreClase()+"Repository";
-
 		logger.info("createRepository" + "  for Entity:  " + entidad.getNombreClase());
 		String datoTipo = "";
 
-		
 			for (AtributoPojo atributoID : listAtributos) {
 				if (atributoID.getsId()) {
 					datoTipo = atributoID.getTipoDato();
 				}
 			}
-		
 
 		sb1.append("package " + packageNames + ".repository;\r\n");
 		sb1.append("\r\n");
@@ -142,21 +104,16 @@ public class RepositoriesServices {
 		sb1.append("import org.springframework.data.repository.CrudRepository;");
 		sb1.append("\r\n");
 		// sb.append("import org.springframework.data.jpa.repository.JpaRepository;");
-		// buscar cuando usar uno o el otro
-		
+
 		sb1.append("import " + packageNames + "." + entidad.getPaquete() +"."+ entidad.getNombreClase() + ";");
-
-
 		sb1.append("\r\n");
 		sb1.append("\r\n");
 		sb1.append("public interface "+nameOfClass+" extends CrudRepository< " + entidad.getNombreClase() + ", "+ datoTipo + "> {\r\n ");
 		sb1.append("\r\n");
 
 			for (AtributoPojo atributos : listAtributos) {
-
 				String cadenaOriginal = atributos.getAtributoName();
 				String primeraLetra = cadenaOriginal.substring(0, 1).toUpperCase();
-				//String restoDeLaCadena = cadenaOriginal.substring(1).toLowerCase();
 				String restoDeLaCadena = cadenaOriginal.substring(1);
 				String atributoName = primeraLetra + restoDeLaCadena;
 
@@ -168,24 +125,16 @@ public class RepositoriesServices {
 														+ " " + atributos.getAtributoName()+");");
 					sb1.append("\r\n");
 				}
-
 			}
-
 		sb1.append("\r\n");
 		sb1.append("}\r\n");
-		
 		Thread.sleep(relantizar );
-		
 		this.createFileClass(nameOfClass, "repository", sb1);
-		
 	}
 
 	
-	
-	
-	private  void createService(EntidadesPojo entidad ) throws InterruptedException {
 
-		System.out.println("SERVICIOOO  ########1");
+	private  void createService(EntidadesPojo entidad ) throws InterruptedException {
 
 		StringBuilder sb2 = new StringBuilder("\r\n");
 		String cadenaOriginal="";
@@ -201,8 +150,6 @@ public class RepositoriesServices {
 				datoTipo = atributoID.getTipoDato();				
 			}
 		}
-
-		System.out.println("SERVICIOOO  ########2 IMPORT");
 		sb2.append("package " + packageNames + ".service ;\r\n"); // nombre del paquete hay
 		sb2.append("\r\n");
 		sb2.append("import java.util.Optional;");
@@ -215,50 +162,36 @@ public class RepositoriesServices {
 
 		for (RelacionPojo relacion : entidad.getRelaciones()) {
 				sb2.append("import " + packageNames + "." + entidad.getPaquete() + "." + relacion.getNameClassRelacion()+";" +"\r\n");
-			System.out.println("SERVICIOOO  ########2 IMPORT ENTIDADA");
 		}
-
 		sb2.append("\r\n");
 		sb2.append("\r\n");
 		sb2.append("\r\n");
 		sb2.append("public interface "+nameOfClass+"{\r\n ");
 		sb2.append("\r\n");
 
-
-
 		for (AtributoPojo atributos : listAtributos) {
-
 			if (!atributos.getsId()) {
 				cadenaOriginal = atributos.getAtributoName();
 				String primeraLetra = cadenaOriginal.substring(0, 1).toUpperCase();
 				String restoDeLaCadena = cadenaOriginal.substring(1);
 				atributoName = primeraLetra + restoDeLaCadena;
-
 				sb2.append("		public " + entidad.getNombreClase() + "  findBy" + atributoName + "(" + atributos.getTipoDato()
 						+ " " + atributos.getAtributoName() + ");"+"\r\n");
 				sb2.append("\r\n");
-
-				System.out.println("SERVICIOOO  ########2 PUBLIC 3");
 			}
 		}
 
 		for (AtributoPojo atributos : listAtributos) {
 				if (!atributos.getsId()) {
-
 					cadenaOriginal = atributos.getAtributoName();
 					String primeraLetra = cadenaOriginal.substring(0, 1).toUpperCase();
 					String restoDeLaCadena = cadenaOriginal.substring(1);
 					atributoName = primeraLetra + restoDeLaCadena;
-
 					sb2.append("		public List<" + entidad.getNombreClase() + ">  findBy" + atributoName + "Containing("
 							+ atributos.getTipoDato() + " " + atributos.getAtributoName() + ");"+"\r\n");
 					sb2.append("\r\n");
-
-					System.out.println("SERVICIOOO  ######## PUBLIC LIST");
 				}
 			}
-
-		System.out.println("SERVICIOOO  ######## PUBLIC METODOS");
 		sb2.append("		public " + entidad.getNombreClase() + " findById"+ "("+ datoTipo+ " id);");
 		sb2.append("\r\n");
 		sb2.append("		public boolean save"+entidad.getNombreClase()+"("+entidad.getNombreClase()+" "+entidad.getNombreClase().toLowerCase()+");");
@@ -273,15 +206,11 @@ public class RepositoriesServices {
 		sb2.append("\r\n");
 		sb2.append("\r\n");
 
-
 		for (RelacionPojo relacion : entidad.getRelaciones()) {
-//			if(relacion.getBidireccional()){
-
 			if (relacion.getRelation().equals("ManyToMany") || relacion.getRelation().equals("OneToMany")) {
 				sb2.append("		public List<"+entidad.getNombreClase()+">  findBy" + relacion.getNameClassRelacion() + "Containing("
 						+ relacion.getNameClassRelacion() + " " + relacion.getNameRelacion() + ");");
 				sb2.append("\r\n");
-
 			}else{
 				sb2.append("		public List<"+entidad.getNombreClase()+">  findByRelacion"+relacion.getNameClassRelacion()
 																	+"("+ relacion.getNameClassRelacion()
@@ -290,15 +219,12 @@ public class RepositoriesServices {
 			}
 		}
 		sb2.append("}\r\n");
-		
 		Thread.sleep(relantizar );
 		this.createFileClass(nameOfClass, "service", sb2);
 	}
 	
-	
-	
+
 	private String metodo(StringBuilder sb, String nameOfClass, String numeral) {
-		
 		sb.append("		if (fileOptional"+numeral+".isPresent()) {"+"\r\n");
 		sb.append("\r\n");
 		sb.append("		try {"+"\r\n");
@@ -315,33 +241,25 @@ public class RepositoriesServices {
 		sb.append("		return new "+nameOfClass+"(); "+"\r\n");
 		sb.append("		}"+"\r\n");
 		sb.append("\r\n");
-		
 		return sb.toString();
 	}
 	
 	
 	private String metodTrycath(StringBuilder sb, String operacion, String operacionElse ) {
-		
 		sb.append("		try {"+"\r\n");
 		sb.append("\r\n");
-	//	sb.append("		"+repositorieNameOjecte + ".save("+entidad.getNombreClase().toLowerCase()+");"+"\r\n");
 		sb.append(operacion);
-	//	sb.append("		return true;"+"\r\n");
 		sb.append("\r\n");
 		sb.append("		} catch (DataAccessException e) {"+"\r\n");
 		sb.append("		logger.error(\" ERROR : \" + e);"+"\r\n");
 		sb.append(operacionElse);
-		//sb.append("		return false;"+"\r\n");
 		sb.append("\r\n");
-		
 		return sb.toString();
 	}
+
 	
-	
-	
-private String metodoGeneric(StringBuilder sb, String nameOfClass, String numeral, String operacion, String operacionElse ) {
-		
-		
+	private String metodoGeneric(StringBuilder sb, String nameOfClass, String numeral, String operacion, String operacionElse ) {
+
 		sb.append("		if (fileOptional"+numeral+".isPresent()) {"+"\r\n");
 		sb.append("\r\n");
 		sb.append("		try {"+"\r\n");
@@ -351,20 +269,15 @@ private String metodoGeneric(StringBuilder sb, String nameOfClass, String numera
 		sb.append("		"+nameOfClass+" proyectoBDA"+numeral+" = fileOptional"+numeral+".get();"+"\r\n");
 		sb.append("\r\n");
 		sb.append(operacion);
-	//	sb.append("		return proyectoBDA; "+"\r\n");
 		sb.append("		} catch (DataAccessException e) {  "+"\r\n");
 		sb.append("		logger.error(\" ERROR : \" + e); "+"\r\n");
 		sb.append("		}"+"\r\n");
 		sb.append("  	}else { "+"\r\n");
 		sb.append(operacionElse);
-	//	sb.append("		return new "+nameOfClass+"(); "+"\r\n");
 		sb.append("		}"+"\r\n");
 		sb.append("\r\n");
-		
 		return sb.toString();
 	}
-	
-	
 }
 
 	

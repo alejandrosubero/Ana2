@@ -89,8 +89,7 @@ public class AnadirCarpeta {
 
 		logger.info("se instancia el objeto tipo entidad Proyecto");
 
-		logger.info(
-				"inicia la recuperacion del path del proyecto ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+		logger.info("inicia la recuperacion del path del proyecto +++++++");
 		String pathOutputZip = direccionDeCarpeta + nombreArchivoZip + ".zip"; // ruta y nombre del zip generar
 		logger.info("inicia la recuperacion del path del proyecto en:  " + pathOutputZip);
 
@@ -101,12 +100,8 @@ public class AnadirCarpeta {
 		byte[] bic = readBytesFromFile(pathOutputZip);
 		proyecto.setPic(bic);
 
-		
-	
 		try {
-		
 		logger.info("inicia el salvado del proyecto salveProyecto");
-		
 		if (proyectoServiceImpl.saveProyecto(proyecto)) {
 			
 			logger.info("Proyecto salvado");	
@@ -116,12 +111,9 @@ public class AnadirCarpeta {
 			logger.info("Carpeta base borrada");
 			
 			logger.info("inicia el borrado del archivo zip");
-		
 			borrarFolder(pathOutputZip);
 			logger.info("Zip fue borrado");
-			
 			salveInfo = true;
-			
 		}
 	} catch (Exception e) {
 		logger.error("El proyecto no fue salvado");
@@ -139,53 +131,39 @@ public class AnadirCarpeta {
 	
 	public static byte[] readBytesFromFile(String filePaths) {
 
-		
 		logger.info("Inicia Metodo readBytesFromFile()");
-
 		logger.info("inicia la recuperacion del paht");
 		String filePath = filePaths; // String pathOutputZip
-		
 		logger.info("finaliza la recuperacion del paht en: " + filePath);
 		FileInputStream fileInputStream = null;
 		byte[] bytesArray = null;
 
 		try {
-			
 			logger.info("inicia la generacion de byte");
 			File file = new File(filePath);
 			bytesArray = new byte[(int) file.length()];
-
 			// read file into bytes[]
 			fileInputStream = new FileInputStream(file);
 			fileInputStream.read(bytesArray);
 			logger.info("finaliza la generacion de byte");
-			
 		} catch (IOException e) {
 			e.printStackTrace();
 			logger.error("Ourre error inesperado la generacion de byte" + e);
-		
 		} finally {
-			
 			if (fileInputStream != null) {
-				
 				try {
 					fileInputStream.close();
-					
 				} catch (IOException e) {
-					
 					e.printStackTrace();
 				}
 			}
 		}
-		
 		logger.info("inicia envio de  [] byte");
-		
 		return bytesArray;
 	}
 
 	
 	public void borrarFolder(String directorio) { // metodo que pasa in file para borrar el folder completo
-		
 		File f = new File(directorio);
 		this.borrarcarpetas(f);
 	}
@@ -193,20 +171,15 @@ public class AnadirCarpeta {
 	
 	
 	private void borrarcarpetas(File fileDel) {
-
 		if (fileDel.isDirectory()) {
-		
 			if (fileDel.list().length == 0) {
 				fileDel.delete();
 			} else {
-
 				for (String temp : fileDel.list()) {
-					
 						File fileDelete = new File(fileDel, temp);
 						// recursive delete
 						borrarcarpetas(fileDelete);
 				}
-
 				if (fileDel.list().length == 0) {fileDel.delete();}
 			}
 		} else {
@@ -215,37 +188,29 @@ public class AnadirCarpeta {
 		}
 	}
 
-	
-	
+
 	public boolean isEncryptFiles() {
 		return isEncryptFiles;
 	}
 
-	
 	public void setEncryptFiles(boolean isEncryptFiles) {
 		this.isEncryptFiles = isEncryptFiles;
 	}
-	
 
 	public String getPassword() {
 		return password;
 	}
-
 	
 	public void setPassword(String password) {
 		this.password = password;
 	}
 
-	
 	public ProyectoServiceImpl getProyectoServiceImpl() {
 		return proyectoServiceImpl;
 	}
 
-	
 	public void setProyectoServiceImpl(ProyectoServiceImpl proyectoServiceImpl) {
 		this.proyectoServiceImpl = proyectoServiceImpl;
 	}
-
-
 
 }

@@ -89,11 +89,8 @@ public class ServicesImplimet {
 
 
 	public StringBuilder createImport(String serviceName, String repositorieName, EntidadesPojo entidad) {
-
 		StringBuilder sb = new StringBuilder("\r\n");
-
-		logger.info("createServiceImplement" + " paso 2 import for Entity:  " + entidad.getNombreClase());
-
+		// logger.info("createServiceImplement" + " paso 2 import for Entity:  " + entidad.getNombreClase());
 		sb.append("package " + packageNames + ".serviceImplement ;\r\n");
 		sb.append("\r\n");
 		sb.append("import " + packageNames + ".service." + serviceName + ";\r\n");
@@ -119,9 +116,7 @@ public class ServicesImplimet {
 	private StringBuilder createTitulo(String nameOfClass, String serviceName, String repositorieName, String repositorieNameOjecte) {
 
 		StringBuilder sb1 = new StringBuilder("\r\n");
-
-		logger.info("createServiceImplement" + " paso 3 clase titulo  for Entity:  " + nameOfClass);
-
+		// logger.info("createServiceImplement" + " paso 3 clase titulo  for Entity:  " + nameOfClass);
 		sb1.append("\r\n");
 		sb1.append("\r\n");
 		sb1.append("@Service" + "\r\n");
@@ -143,9 +138,8 @@ public class ServicesImplimet {
 		for (AtributoPojo atributos : listAtributos) {
 			int cont = 1;
 			if (!atributos.getsId()) {
-				logger.info("createServiceImplement" + " PASO ==> 4 metodo en loop  for Entity:  " + entidad.getNombreClase() + " CUENTAS = " + cont);
+				// logger.info("createServiceImplement" + " PASO ==> 4 metodo en loop  for Entity:  " + entidad.getNombreClase() + " CUENTAS = " + cont);
 				String atributoName = atributos.getAtributoName().substring(0, 1).toUpperCase() + atributos.getAtributoName().substring(1);
-
 				sbp.append("		@Override" + "\r\n");
 				sbp.append("		public " + entidad.getNombreClase() + " findBy" + atributoName + "(" + atributos.getTipoDato() + " " + atributos.getAtributoName() + "){" + "\r\n");
 				sbp.append("\r\n");
@@ -172,7 +166,6 @@ public class ServicesImplimet {
 
 		StringBuilder sb = new StringBuilder("\r\n");
 		logger.info("**createServiceImplement  metodos  for Entity:  " + entidad.getNombreClase()+"**");
-
 		sb.append("\r\n");
 		sb.append(metodgetAll(entidad, repositorieNameOjecte, entidadNombre));
 		sb.append("\r\n");
@@ -269,7 +262,6 @@ public class ServicesImplimet {
 		return sf;
 	}
 
-
 	private StringBuilder metodfindById(EntidadesPojo entidad, String repositorieNameOjecte, String entidadNombre) {
 
 		StringBuilder sf = new StringBuilder("\r\n");
@@ -320,27 +312,6 @@ public class ServicesImplimet {
 			if (relacion.getBidireccional()) {
 				if (relacion.getRelation().equals("ManyToMany") || relacion.getRelation().equals("OneToMany")) {
 					this.Relacionx(entidad, entidadNombre, relacion);
-//					sbx.append("\r\n");
-//					sbx.append("\r\n");
-//					sbx.append("		@Override" + "\r\n");
-//					sbx.append("		public List<" + getNombreClase + "> findBy" + relacion.getNameClassRelacion() + "Containing(" + relacion.getNameClassRelacion() + " " + relacion.getNameRelacion() + "){" + "\r\n");
-//					// sbx.append("				logger.info(\"metodo: metodContainingRelacion NEW \");" + "\r\n");// comentarriooooooooooooooooooooooooooooo
-//					sbx.append("			logger.info(\"Get allProyect\");" + "\r\n");
-//					sbx.append(" 			List<" + getNombreClase + "> lista" + getNombreClase + " = new ArrayList<" + getNombreClase + ">();" + "\r\n");
-//					sbx.append("	for (" + getNombreClase + " " + getNombre + " : this.getAll" + getNombreClase + "()) {" + "\r\n");
-//
-//					// cunado sepa como hacer un metodo generico. picamos ak
-//
-//					sbx.append("		for (" + relacion.getNameClassRelacion() + " " + relacion.getNameRelacion() + "x : "
-//							+ getNombre + ".get" + relacion.getNameRelacion() + "()) { " + "\r\n");
-//					sbx.append("				if(" + getNombreClase + ".get" + relacion.getNameRelacion() + "().contains(" + relacion.getNameRelacion() + ".get" + relacion.getNameRelacion() + "())) {	" + "\r\n");
-//					sbx.append("					lista" + getNombreClase + ".add(" + getNombre + "x);	" + "\r\n");
-//					sbx.append("				}" + "\r\n");
-//					sbx.append("	  	 	}" + "\r\n");
-//					sbx.append("		}" + "\r\n");
-//					sbx.append("					return lista" + getNombreClase + ";	" + "\r\n");
-//					sbx.append("\r\n");
-//					sbx.append("	}" + "\r\n");
 			}
 			}
 		}
@@ -436,7 +407,7 @@ public class ServicesImplimet {
 		String getNombre = entidad.getNombreClase().toLowerCase();
 		List<AtributoPojo> listAtributos = entidad.getAtributos();
 
-		logger.info("  " + entidad.getNombreClase());
+		// logger.info("  " + entidad.getNombreClase());
 
 		for (AtributoPojo atributo : listAtributos) {
 			String cadenaOriginal = atributo.getAtributoName();
@@ -445,7 +416,7 @@ public class ServicesImplimet {
 			String atributoName = primeraLetra + restoDeLaCadena;
 
 			if (!atributo.getsId()) {
-				logger.info(" " + entidad.getNombreClase());
+			//	logger.info(" " + entidad.getNombreClase());
 				sbx.append("\r\n");
 				sbx.append("		@Override" + "\r\n");
 				sbx.append("		public List<" + getNombreClase + "> findBy"+atributoName+"Containing(" + atributo.getTipoDato()+ " " + atributoName.toLowerCase()+"){" + "\r\n");
@@ -479,7 +450,7 @@ public class ServicesImplimet {
 	
 	private void createServiceImpl(EntidadesPojo entidad) throws InterruptedException {
 
-		logger.info("createServiceImplement" + " paso 1 for Entity:  " + entidad.getNombreClase());
+	//	logger.info("createServiceImplement" + " paso 1 for Entity:  " + entidad.getNombreClase());
 		StringBuilder sbh = new StringBuilder("\r\n");
 		String entidadNombre = entidad.getNombreClase();
 		String nameOfClass = entidad.getNombreClase() + "ServiceImplement";
@@ -491,9 +462,29 @@ public class ServicesImplimet {
 		sbh.append(this.crearMetodoloop(entidad, repositorieNameOjecte));
 		sbh.append(this.metods(entidad, repositorieNameOjecte, entidadNombre));
 		Thread.sleep(relantizar);
-
 		this.createFileClass(nameOfClass, "serviceImplement", sbh);
 	}
 }
-	
 
+
+//					sbx.append("\r\n");
+//					sbx.append("\r\n");
+//					sbx.append("		@Override" + "\r\n");
+//					sbx.append("		public List<" + getNombreClase + "> findBy" + relacion.getNameClassRelacion() + "Containing(" + relacion.getNameClassRelacion() + " " + relacion.getNameRelacion() + "){" + "\r\n");
+//					// sbx.append("				logger.info(\"metodo: metodContainingRelacion NEW \");" + "\r\n");// comentarriooooooooooooooooooooooooooooo
+//					sbx.append("			logger.info(\"Get allProyect\");" + "\r\n");
+//					sbx.append(" 			List<" + getNombreClase + "> lista" + getNombreClase + " = new ArrayList<" + getNombreClase + ">();" + "\r\n");
+//					sbx.append("	for (" + getNombreClase + " " + getNombre + " : this.getAll" + getNombreClase + "()) {" + "\r\n");
+//
+//					// cunado sepa como hacer un metodo generico. picamos ak
+//
+//					sbx.append("		for (" + relacion.getNameClassRelacion() + " " + relacion.getNameRelacion() + "x : "
+//							+ getNombre + ".get" + relacion.getNameRelacion() + "()) { " + "\r\n");
+//					sbx.append("				if(" + getNombreClase + ".get" + relacion.getNameRelacion() + "().contains(" + relacion.getNameRelacion() + ".get" + relacion.getNameRelacion() + "())) {	" + "\r\n");
+//					sbx.append("					lista" + getNombreClase + ".add(" + getNombre + "x);	" + "\r\n");
+//					sbx.append("				}" + "\r\n");
+//					sbx.append("	  	 	}" + "\r\n");
+//					sbx.append("		}" + "\r\n");
+//					sbx.append("					return lista" + getNombreClase + ";	" + "\r\n");
+//					sbx.append("\r\n");
+//					sbx.append("	}" + "\r\n");

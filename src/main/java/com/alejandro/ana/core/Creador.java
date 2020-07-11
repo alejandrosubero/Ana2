@@ -49,7 +49,6 @@ public class Creador {
 	private int contador = 0;
 	private int contador2 = 0;
 
-
 	private String barra ="\\";
 	
 	private String sDirectorioTrabajo = System.getProperty("user.dir");
@@ -57,10 +56,8 @@ public class Creador {
 	private String direccionOriginal = sDirectorioTrabajo + barra +"libbase";
 
 	protected static final Log logger = LogFactory.getLog(Creador.class);
-	
-	
+
 	public Creador() {}
-	
 	
 
 	public void setDatos(String proyectoName, String packageNames, String description) {
@@ -69,7 +66,6 @@ public class Creador {
 		this.packageNames = packageNames;
 		this.description = description;
 	}
-
 
 	
 	public void valoresPackage() {
@@ -104,14 +100,12 @@ public class Creador {
 			}
 		}
 
-		
-		logger.info("PROYECT NAME: => "+ proyectoName);
-		logger.info("PACKAGE NAME => "+  packageNames);
-		logger.info("GRUP NAME: => "+ com + "." + packageNames1);
-		logger.info("ARTIFACT NAME: => "+ artifact);
-		logger.info("WORKING ROOT DIRECTORY : => "+ sDirectorioTrabajo);
-		logger.info("FOLDER ADDRESS: => "+ direccionDeCarpeta);
-
+//		logger.info("PROYECT NAME: => "+ proyectoName);
+//		logger.info("PACKAGE NAME => "+  packageNames);
+//		logger.info("GRUP NAME: => "+ com + "." + packageNames1);
+//		logger.info("ARTIFACT NAME: => "+ artifact);
+//		logger.info("WORKING ROOT DIRECTORY : => "+ sDirectorioTrabajo);
+//		logger.info("FOLDER ADDRESS: => "+ direccionDeCarpeta);
 	}
 
 	public void crearCarpeta() {
@@ -122,8 +116,7 @@ public class Creador {
 		List<String> listaCarpetas = new ArrayList<String>();
 		String lugarCarpeta = direccionDeCarpeta + proyectoName;
 		
-		logger.info("PLACE FOLDER => " + lugarCarpeta );
-
+		// logger.info("PLACE FOLDER => " + lugarCarpeta );
 
 		String carpetas = lugarCarpeta +barra + "src";
 		listaCarpetas.add(carpetas);
@@ -171,7 +164,6 @@ public class Creador {
 			} else {
 				// JOptionPane.showMessageDialog(null, "el archivo no existe pero se creara");
 				logger.info("THE FOLDER DOES NOT EXIST IT WILL BE CREATED");
-				
 				create_carpeta.mkdirs();
 			}
 		}
@@ -235,26 +227,18 @@ public class Creador {
 		OutputStream outputStream = null;
 
 		try {
-
 			File archivoOriginal = new File(a);
 			File archivoCopia = new File(direccionDeCarpeta + proyectoName + b);
-
 			inputStream = new FileInputStream(archivoOriginal);
 			outputStream = new FileOutputStream(archivoCopia);
-
 			byte[] buffer = new byte[1024];
 			int length;
-
 			while ((length = inputStream.read(buffer)) > 0) {
 				outputStream.write(buffer, 0, length);
 			}
-
 			inputStream.close();
 			outputStream.close();
-
-			
 			logger.info("Archivo copiado.");
-
 		} catch (IOException e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -269,7 +253,6 @@ public class Creador {
 		logger.info("Inicia CopiarArchivo()");
 		
 		try {
-
 			List<String> archivosOriginales = new ArrayList<String>();
 			List<String> archivosCopias = new ArrayList<String>();
 
@@ -296,14 +279,11 @@ public class Creador {
 
 					archivoOriginal = new File(archivosOriginales.get(i));
 					archivoCopia = new File(direccionDeCarpeta + proyectoName + archivosCopias.get(j));
-
 					inputStream = new FileInputStream(archivoOriginal);
 					outputStream = new FileOutputStream(archivoCopia);
 
 					byte[] buffer = new byte[1024];
-
 					int length;
-
 					while ((length = inputStream.read(buffer)) > 0) {
 						outputStream.write(buffer, 0, length);
 					}
@@ -311,9 +291,7 @@ public class Creador {
 					outputStream.close();
 				}
 			}
-			
 			logger.info("Archivo copiado.");
-		
 		} catch (IOException e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -347,24 +325,17 @@ public class Creador {
 			try {
 
 				if (create_archivo.createNewFile()) {
-
 					FileWriter fw = new FileWriter(create_archivo);
 					BufferedWriter bw = new BufferedWriter(fw);
-
 					bw.write(contenido1);
 					bw.close();
 
-					
 					logger.info("THE FILE WAS CREATED");
-
 					// JOptionPane.showMessageDialog(null, "el archivo fue creado");
-
 				} else {
 					logger.info("THE FILE WAS NOT CREATED");
-					
 				// 	JOptionPane.showMessageDialog(null, "el archivo no fue creado");
 				}
-
 			} catch (IOException e) {
 				e.printStackTrace();
 				Logger.getLogger(Creador.class.getName()).log(Level.SEVERE, null, e);

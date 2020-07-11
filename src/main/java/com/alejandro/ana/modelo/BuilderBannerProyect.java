@@ -18,32 +18,6 @@ public class BuilderBannerProyect {
         this.nombre = nombre;
     }
 
-//    public void builderBannercreate() {
-//
-//        int width =200;
-//        int height = 30;
-//
-//        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-//        Graphics g = image.getGraphics();
-//        g.setFont(new Font("SansSerif", Font.BOLD, 17));
-//
-//        Graphics2D g2 = (Graphics2D) g;
-//        g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-//        g2.drawString(nombre.toUpperCase(), 6, 12);
-//
-//        for(int y =0; y < height; y++){
-//            StringBuilder builder = new StringBuilder();
-//            for(int x =0; x <width; x++){
-//                builder.append(image.getRGB(x, y) == -16777216? " " : "@");
-//            }
-//            String prueba = builder.toString();
-//            builder2.append(prueba+"\r\n" );
-//            // System.out.println(builder);
-//        }
-//        String escrito = builder2.toString();
-//        System.out.print(escrito);
-//        crearArchivo(builder2);
-//    }
 
     public void builderBannercreate() {
 
@@ -80,7 +54,6 @@ public class BuilderBannerProyect {
         String carpetas = direccion;
         String archivos = "banner.txt";
         String FilePath = carpetas+archivos;
-
         File create_carpeta = new File(carpetas);
         File create_archivo = new File(carpetas + archivos);
 
@@ -107,7 +80,6 @@ public class BuilderBannerProyect {
     public void removeEmptyLines(String FilePath) throws IOException {
 
         File inputFile = new File(FilePath);
-
         BufferedReader reader = new BufferedReader(new FileReader(inputFile));
         String inputFileReader;
         ArrayList<String> DataArray = new ArrayList<String>();
@@ -128,3 +100,31 @@ public class BuilderBannerProyect {
     }
 
 }
+
+
+//    public void builderBannercreate() {
+//
+//        int width =200;
+//        int height = 30;
+//
+//        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+//        Graphics g = image.getGraphics();
+//        g.setFont(new Font("SansSerif", Font.BOLD, 17));
+//
+//        Graphics2D g2 = (Graphics2D) g;
+//        g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+//        g2.drawString(nombre.toUpperCase(), 6, 12);
+//
+//        for(int y =0; y < height; y++){
+//            StringBuilder builder = new StringBuilder();
+//            for(int x =0; x <width; x++){
+//                builder.append(image.getRGB(x, y) == -16777216? " " : "@");
+//            }
+//            String prueba = builder.toString();
+//            builder2.append(prueba+"\r\n" );
+//            // System.out.println(builder);
+//        }
+//        String escrito = builder2.toString();
+//        System.out.print(escrito);
+//        crearArchivo(builder2);
+//    }

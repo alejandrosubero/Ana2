@@ -123,7 +123,6 @@ public class ArchivosBase  {
 		} catch (Exception e) {	logger.error(e); }
 	}
 
-
 	public void servletInitializer() {
 		try {
 			Thread.sleep(relantizar);

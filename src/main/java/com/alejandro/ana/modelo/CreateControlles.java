@@ -64,7 +64,6 @@ public class CreateControlles {
 
         StringBuilder sb = new StringBuilder("\r\n");
         logger.info("Create Controller metodos  for Entity:  " + entidad.getNombreClase());
-
         try {
             Thread.sleep(relantizar);
             sb.append("\r\n");
@@ -116,23 +115,17 @@ public class CreateControlles {
     }
 
 
-
-
-
     private void createArchivoController( String escrito, String nameOfClass  ) {
-
         try {
             Thread.sleep(relantizar);
             String nombreArchivo = nameOfClass + ".java";
             String entidad_paquete = "controller";
-
             String direction = creador.getDireccionDeCarpeta() + proyectoName + barra + "src" + barra + "main" + barra
                     + "java" + barra + creador.getCom() + barra + creador.getPackageNames1() + barra + creador.getArtifact()
                     + barra + entidad_paquete;
 
             Thread.sleep(relantizar2);
             creador.crearArchivo(direction, escrito, nombreArchivo);
-
         } catch (Exception e) {
             logger.error(e);
         }
@@ -162,7 +155,6 @@ public class CreateControlles {
             sb1.append("import org.springframework.beans.factory.annotation.Autowired;" + "\r\n");
             sb1.append("\r\n");
             sb1.append("import java.util.List;"+"\r\n");
-
             for (RelacionPojo relacion : entidad.getRelaciones()) {
             sb1.append("import " + paquete + "." + entidad.getPaquete() + "." + relacion.getNameClassRelacion()+";" +"\r\n");
              }
@@ -174,7 +166,6 @@ public class CreateControlles {
     private  StringBuilder createTituloClass(EntidadesPojo entidad){
 
     StringBuilder sb2 = new StringBuilder();
-
         sb2.append("@RestController\r\n");
         sb2.append("@CrossOrigin(origins = \"*\")\r\n");
         sb2.append("@RequestMapping(\"/"+entidad.getNombreClase().toLowerCase()+"\")"+ "\r\n");
@@ -183,7 +174,6 @@ public class CreateControlles {
         sb2.append("@Autowired"+"\r\n");
         sb2.append( entidad.getNombreClase() + "Service "+ entidad.getNombreClase().toLowerCase() +"Service;"+"\r\n");
         sb2.append("\r\n");
-
         return sb2;
     }
 
@@ -195,11 +185,9 @@ public class CreateControlles {
         List<AtributoPojo> listAtributo = entidad.getAtributos();
 
         for (AtributoPojo atributos : listAtributos) {
-
             String atributoName = atributos.getAtributoName().substring(0, 1).toUpperCase()
                                                 + atributos.getAtributoName().substring(1);
             String atrubutoObjeto = atributos.getAtributoName().toLowerCase();
-
             if (!atributos.getsId()) {
                 sb3.append("\r\n");
                 sb3.append("        @GetMapping(\"/Get"+atrubutoObjeto+"/{"+atrubutoObjeto+"}\")" +"\r\n");
@@ -211,10 +199,8 @@ public class CreateControlles {
         }
 
         for (AtributoPojo atributo : listAtributo) {
-
             String atributoName = atributo.getAtributoName().substring(0, 1).toUpperCase() + atributo.getAtributoName().substring(1);
             String atrubutoObjeto = atributo.getAtributoName().toLowerCase();
-
             if (!atributo.getsId()) {
                 sb3.append("\r\n");
                 sb3.append("        @GetMapping(\"/Get"+atrubutoObjeto+"contain/{"+atrubutoObjeto+"}\")" +"\r\n");
@@ -254,11 +240,8 @@ public class CreateControlles {
     }
 
 
-
     private StringBuilder createSalve(EntidadesPojo entidad){
-
         StringBuilder sb6 = new StringBuilder();
-
                 sb6.append("\r\n");
                 sb6.append("        @PostMapping(\"/save\")" + "\r\n");
                 sb6.append("        private Boolean  save" + entidad.getNombreClase() + "(@RequestBody "+entidad.getNombreClase()+" "+entidad.getNombreClase().toLowerCase() +"){ " + "\r\n");
@@ -287,7 +270,6 @@ public class CreateControlles {
 
 
     private StringBuilder findByRelacionNoBidirecional(EntidadesPojo entidad){
-
         StringBuilder sb61 = new StringBuilder("\r\n");
         for (RelacionPojo relacion: entidad.getRelaciones()) {
 //            if (!relacion.getBidireccional()) {
@@ -310,7 +292,6 @@ public class CreateControlles {
 
 
     private StringBuilder createUpdate(EntidadesPojo entidad){
-
         StringBuilder sb7 = new StringBuilder();
         sb7.append("\r\n");
         sb7.append("        @PostMapping(\"/Update\")" + "\r\n");

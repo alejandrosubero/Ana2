@@ -15,7 +15,7 @@ public class ArchivoBaseDatosPojo {
 	private String proyectoName;
 	private String packageNames;
 	private String description;
-	// private Boolean createPojoForEntitys;
+	// private Boolean createCapaPojoForEntitys;**************************************************************
 
 	// para el pomxml
 	private Boolean wihtSegurity; //spring segurity o no
@@ -25,11 +25,10 @@ public class ArchivoBaseDatosPojo {
 	private Integer tipoDatabase; // oracle = 2, Mysql = 1, h2 = 3.
     private Boolean nativeMysql; // usar generador nativo de mysql
 	private Double javaVersion;
-
 	private List<EntidadesPojo> entidades;
 
-	public ArchivoBaseDatosPojo() {	}
 
+	public ArchivoBaseDatosPojo() {	}
 
 	public String getProyectoName() {
 		return proyectoName;

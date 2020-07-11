@@ -19,17 +19,13 @@ import java.util.List;
 @Component
 public class CreateValidation {
 
-    // private String description;
     private String proyectoName;
     private String packageNames;
-
     private List<EntidadesPojo> entidades;
     private Creador creador;
-
     private String barra = "";
     private int relantizar = 100;
     private int relantizar2 = 300;
-
     private String clave = "pojo";
     private List<EntidadesPojo> toPojos = new ArrayList<>();
     private List<EntidadesPojo> toEntidad = new ArrayList<>();
@@ -88,7 +84,6 @@ public class CreateValidation {
     }
 
 
-
     private  StringBuilder metods(EntidadesPojo entidad ) throws InterruptedException {
 
         StringBuilder validations = new StringBuilder ();
@@ -106,7 +101,6 @@ public class CreateValidation {
         return  validations;
     }
 
-
     private void createArchivo(String escrito, String nameOfClass) {
         try {
             Thread.sleep(relantizar);
@@ -123,12 +117,10 @@ public class CreateValidation {
     }
 
 
-
-private StringBuilder createImport(EntidadesPojo entidad){
+    private StringBuilder createImport(EntidadesPojo entidad){
 
     StringBuilder sb0 = new StringBuilder ();
     logger.info("createService" + "  for Entity:  " + entidad.getNombreClase());
-
     sb0.append("package " + packageNames + ".validation ;\r\n");
     sb0.append("\r\n");
     sb0.append("import java.util.Optional;");
@@ -159,7 +151,7 @@ private StringBuilder createImport(EntidadesPojo entidad){
 }
 
 
-private StringBuilder cabeceraClase(EntidadesPojo entidad){
+    private StringBuilder cabeceraClase(EntidadesPojo entidad){
     StringBuilder sb1 = new StringBuilder ();
     String nameClass =entidad.getNombreClase()+"Validation";
     sb1.append("\r\n");
@@ -175,12 +167,10 @@ private StringBuilder cabeceraClase(EntidadesPojo entidad){
 }
 
 
-
 private StringBuilder metodoValidad(EntidadesPojo entidad){
 
     StringBuilder sb2 = new StringBuilder ();
     String variable = entidad.getNombreClase().toLowerCase();
-
     sb2.append("        public "+entidad.getNombreClase()+"Pojo valida("+entidad.getNombreClase()+"Pojo "+variable+") {" + "\r\n");
     sb2.append("        "+entidad.getNombreClase()+"Pojo"+" pojo = null;"+"\r\n");
     sb2.append("        try {"+"\r\n");

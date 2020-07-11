@@ -28,7 +28,6 @@ public class CreateMapper {
     private int relantizar2 = 200;
     private String clave = "pojo";
     protected static final Log logger = LogFactory.getLog(CreateMapper.class);
-
     private List<EntidadesPojo> toEntidad = new ArrayList<>();
     private List<EntidadesPojo> toPojos = new ArrayList<>();
 
@@ -106,7 +105,6 @@ public class CreateMapper {
          //   String[] clavePojo = pojo.getNombreClase().split("Pojo");
             sb1.append("import " + paquete + ".pojo."+ relacion.getNameClassRelacion() +"Pojo"+ ";" + "\r\n");
         }
-
         sb1.append("import org.springframework.web.bind.annotation.*;" + "\r\n");
         sb1.append("import org.springframework.stereotype.Component;" + "\r\n");
         sb1.append("import org.springframework.beans.factory.annotation.Autowired;" + "\r\n");
@@ -266,10 +264,6 @@ public class CreateMapper {
                     + barra + entidad_paquete;
             Thread.sleep(relantizar2);
             creador.crearArchivo(direction, escrito, nombreArchivo);
-
-            System.out.println("===nombre de archivo==MAPPER=============>>>>>>>>>>>>>>>>>>>  "+nombreArchivo);
-            System.out.println("====direccion=====MAPPER=======>>>>>>>>>>>>>>>>>>>  "+direction);
-
         } catch (Exception e) {
             logger.error(e);
         }

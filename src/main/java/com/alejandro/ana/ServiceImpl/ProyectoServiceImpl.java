@@ -21,16 +21,11 @@ public class ProyectoServiceImpl implements ProyectService {
 	
 	protected static final Log logger = LogFactory.getLog(ProyectoServiceImpl.class);
 	
-	
 
-	
-	
 	@Override
 	public Proyecto findByName(String nombreProyecto) {
 		logger.info("se ejecuta la busqueda del proyecto");
-		
 		Optional<Proyecto> fileOptional = proyectoRepository.findByName(nombreProyecto);
-		
 		if(fileOptional.isPresent()) {
 			Proyecto file = fileOptional.get();
 			logger.info("se ejecuta el envio del proyecto");
@@ -41,8 +36,6 @@ public class ProyectoServiceImpl implements ProyectService {
 		}
 	}
 
-	
-	
 	@Override
 	public List<Proyecto> findByAll() {
 		logger.info("se inicia la busqueda y retorno de todos los proyectos");
@@ -58,13 +51,6 @@ public class ProyectoServiceImpl implements ProyectService {
 		} catch (Exception e) {	
 			logger.error("ocurrio un error a salvar el proyecto" + e, e);
 			return false;
-			
-			
 		}
 	}
-
-	
-	
-	
-	
 }

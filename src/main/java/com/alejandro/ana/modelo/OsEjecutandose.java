@@ -15,11 +15,11 @@ import com.alejandro.ana.ServiceImpl.GenerarInstanciasServiceImpl;
 @Component
 public class OsEjecutandose {
 
-	
+
 	protected static final Log logger = LogFactory.getLog(OsEjecutandose.class);
 	
 	public String datos_pc() {
-		
+
 		String usar = "";
 
 		try {
