@@ -105,6 +105,11 @@ public class RepositoriesServices {
 
 		creador.crearArchivo(direction, singleString, nameFile);
 		logger.info("Finalizo la creacion de CreateFileClass" + "  NOMBRE = " + entidad_getNombreClase);
+
+
+		System.out.println("===nombre de archivo===============>>>>>>>>>>>>>>>>>>>  "+nameFile);
+		System.out.println("====direccion============>>>>>>>>>>>>>>>>>>>  "+ direction);
+
 	}
 	
 	

@@ -266,6 +266,10 @@ public class CreateMapper {
                     + barra + entidad_paquete;
             Thread.sleep(relantizar2);
             creador.crearArchivo(direction, escrito, nombreArchivo);
+
+            System.out.println("===nombre de archivo==MAPPER=============>>>>>>>>>>>>>>>>>>>  "+nombreArchivo);
+            System.out.println("====direccion=====MAPPER=======>>>>>>>>>>>>>>>>>>>  "+direction);
+
         } catch (Exception e) {
             logger.error(e);
         }
