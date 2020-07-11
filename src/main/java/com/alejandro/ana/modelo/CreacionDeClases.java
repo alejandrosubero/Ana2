@@ -288,7 +288,7 @@ public class CreacionDeClases {
 			if (relacion.getRelation().equals("OneToOne") || relacion.getRelation().equals("ManyToOne")) {
 				sb.append("		@" + relacion.getRelation() + "(cascade = CascadeType." + relacion.getCascadeType());
 				sb.append(", fetch = FetchType.EAGER");
-				sb.append( ", orphanRemoval = "+relacion.getOrphanRemoval()+")" + "\r\n");
+				sb.append( " )" + "\r\n");
 				sb.append("\r\n");
 			}
 

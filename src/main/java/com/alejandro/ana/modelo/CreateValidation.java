@@ -72,7 +72,6 @@ public class CreateValidation {
 
 
     private void separateEntidadToPojos(List<EntidadesPojo> entidadesList) {
-
         logger.info("Inicia la separacion de entidades");
         for (EntidadesPojo entidad : entidadesList) {
             if (entidad.getPaquete().equals(clave) && !entidad.getIsEntity()) {
@@ -121,6 +120,7 @@ public class CreateValidation {
 
     StringBuilder sb0 = new StringBuilder ();
     logger.info("createService" + "  for Entity:  " + entidad.getNombreClase());
+
     sb0.append("package " + packageNames + ".validation ;\r\n");
     sb0.append("\r\n");
     sb0.append("import java.util.Optional;");
@@ -180,7 +180,7 @@ private StringBuilder metodoValidad(EntidadesPojo entidad){
     for (int i=0; i< entidad.getAtributos().size(); i++) {
         String cadenaOriginal = entidad.getAtributos().get(i).getAtributoName();
         String atributoName = cadenaOriginal.substring(0, 1).toUpperCase() + cadenaOriginal.substring(1);
-        sb2.append(variable + ".get" + atributoName + "() != null");
+        sb2.append("        "+variable + ".get" + atributoName + "() != null");
         if (i < entidad.getAtributos().size() - 1) {
             sb2.append(" &&" + "\r\n");
         }

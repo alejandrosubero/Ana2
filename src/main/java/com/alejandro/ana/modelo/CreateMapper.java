@@ -154,7 +154,7 @@ public class CreateMapper {
                             String atributoNameSetGet = atributo.getAtributoName().substring(0, 1).toUpperCase()
                                     + atributo.getAtributoName().substring(1).toLowerCase();
                             String atrubutoObjeto = atributo.getAtributoName().toLowerCase();
-                            sb3.append("            entity.set" + atributoNameSetGet + "(pojo.get" + atributoNameSetGet + "());" + "\r\n");
+                            sb3.append("          entity.set" + atributoNameSetGet + "(pojo.get" + atributoNameSetGet + "());" + "\r\n");
                         }
                     }
 
@@ -162,13 +162,12 @@ public class CreateMapper {
                         for (RelacionPojo relacion : entity.getRelaciones()) {
                             String nombreMapper = (relacion.getNameClassRelacion() + "Mapper");
 
-                            if (relacion.getRelation().equals("OneToOne")) {
+                            if (relacion.getRelation().equals("OneToOne") || relacion.getRelation().equals("ManyToOne")) {
                                 sb3.append("        entity.set" + relacion.getNameRelacion() + "(" + nombreMapper.toLowerCase() + ".PojoToEntity(pojo.get"
                                         + relacion.getNameRelacion() + "()));" + "\r\n");
                             }
 
-                            if (relacion.getRelation().equals("OneToMany") || relacion.getRelation().equals("ManyToOne")
-                                    || relacion.getRelation().equals("ManyToMany")) {
+                            if (relacion.getRelation().equals("OneToMany") || relacion.getRelation().equals("ManyToMany")) {
                                 String relacionClase = relacion.getNameClassRelacion();
                                 String relacionName = relacion.getNameRelacion();
                                 sb3.append("        for (" + relacionClase + "Pojo" + " " + relacionName + "pojo" + " : pojo.get" + relacionName + "()) {" + "\r\n");
@@ -229,13 +228,12 @@ public class CreateMapper {
                         String relacionName = Entidadname[0];
                         String relacionNameList = relacion.getNameRelacion();
 
-                        if (relacion.getRelation().equals("OneToOne")) {
-                            sb3.append("pojo.set" + relacion.getNameRelacion() + "(" + nombreMapper.toLowerCase() + ".entityToPojo(entity.get"
+                        if (relacion.getRelation().equals("OneToOne") || relacion.getRelation().equals("ManyToOne") ) {
+                            sb3.append("        pojo.set" + relacion.getNameRelacion() + "(" + nombreMapper.toLowerCase() + ".entityToPojo(entity.get"
                                     + relacion.getNameRelacion() + "()));" + "\r\n");
                         }
 
-                        if (relacion.getRelation().equals("OneToMany") || relacion.getRelation().equals("ManyToOne")
-                                || relacion.getRelation().equals("ManyToMany")) {
+                        if (relacion.getRelation().equals("OneToMany") || relacion.getRelation().equals("ManyToMany")) {
 
                             sb3.append("        for (" + relacionClase + " " + relacionName + "entity" + " : entity.get" + relacionName + "()) {" + "\r\n");
                             sb3.append("            list" + relacionNameList + ".add(" + nombreMapper.toLowerCase() + ".entityToPojo(" + relacionName +"entity"+" ));" + "\r\n");
