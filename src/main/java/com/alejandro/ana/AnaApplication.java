@@ -23,7 +23,7 @@ public class AnaApplication {
 		ConfigurableApplicationContext context = builder.run(args);
 
 		logger.info("the document  Swagger is in link: ==>  http://localhost:8888/ANACODE/swagger-ui.html");
-		logger.info("the document  h2 is in link: ==> http://localhost:8888/ANACODE/ielacion/h2-console");
+		logger.info("the document  h2 is in link: ==> http://localhost:8888/ANACODE/h2-console");
 	}
 
 }

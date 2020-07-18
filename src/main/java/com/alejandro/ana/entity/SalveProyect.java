@@ -3,13 +3,7 @@ package com.alejandro.ana.entity;
 import java.io.Serializable;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import com.alejandro.ana.pojos.EntidadesPojo;
 import org.hibernate.annotations.GenericGenerator;
@@ -26,10 +20,15 @@ public class SalveProyect  implements Serializable {
 
 	
 	
+//	   @Id
+//	   @Column(name = "id")
+//	   @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
+//	   @GenericGenerator(name = "native", strategy = "native")
+
 	   @Id
-	   @Column(name = "id")
-	   @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
-	   @GenericGenerator(name = "native", strategy = "native")
+	   @GeneratedValue(generator = "sequence_mat_id_generator")
+	   @SequenceGenerator(name="sequence_mat_id_generator", initialValue= 1, allocationSize=1000)
+	   @Column(name = "id", updatable = true, nullable = false, length = 25)
 	   private Long id;
 
 	    @Column(name = "name")

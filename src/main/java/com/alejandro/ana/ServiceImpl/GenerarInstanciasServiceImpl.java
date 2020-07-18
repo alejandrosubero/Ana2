@@ -48,6 +48,9 @@ public class GenerarInstanciasServiceImpl implements GenerarInstanciasService  {
 	@Autowired
 	private CreateControllerCapaPojo createControllerCapaPojo;
 
+	@Autowired
+	private EntityResponseClass entityResponseClass;
+
 	protected static final Log logger = LogFactory.getLog(GenerarInstanciasServiceImpl.class);
 
 	@Override
@@ -122,6 +125,7 @@ public class GenerarInstanciasServiceImpl implements GenerarInstanciasService  {
 	//	createControlles.startCreacionControlles(archivo, creador);
 		createMapper.initiarCreateMapper(archivo, creador);
 		createValidation.startCreacion(archivo, creador);
+		entityResponseClass.startCreateEntityResponseClass(archivo, creador);
 
 		logger.info("Finalizo Creando Archivos de repositorios, servicios proyecto, mappers");
 		

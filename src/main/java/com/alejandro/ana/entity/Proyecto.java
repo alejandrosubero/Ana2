@@ -20,11 +20,18 @@ public class Proyecto implements Serializable {
 	// @GeneratedValue
     // @Column(name = "id")
     // private Long id;
+
+//	@Id
+//	@Column(name = "id")
+//	@GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
+//	@GenericGenerator(name = "native", strategy = "native")
+
 	@Id
-	@Column(name = "id")
-	@GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
-	@GenericGenerator(name = "native", strategy = "native")
+	@GeneratedValue(generator = "mat_id_generator")
+	@SequenceGenerator(name="sequence_mat_id_generator", initialValue= 25, allocationSize=1000)
+	@Column(name = "id", updatable = true, nullable = false, length = 25)
 	private Long id;
+
 
     @Column(name = "name")
 	private String name;

@@ -9,11 +9,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.dao.DataAccessException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -184,10 +184,16 @@ public class CreateControllerCapaPojo {
         sb1.append("import "+paquete+".validation."+entidad.getNombreClase()+"Validation;" + "\r\n");
         sb1.append("import "+paquete+".mapper."+entidad.getNombreClase()+"Mapper;" + "\r\n");
         sb1.append("import "+paquete+".service."+entidad.getNombreClase()+"Service;"+ "\r\n");
+
+        sb1.append("import "+paquete+".mapper.MapperEntityRespone;"+ "\r\n");
+        sb1.append("import "+paquete+".pojo.EntityRespone;"+ "\r\n");
+
         sb1.append("import org.springframework.web.bind.annotation.*;" + "\r\n");
         sb1.append("import org.springframework.beans.factory.annotation.Autowired;" + "\r\n");
-        sb1.append("\r\n");
         sb1.append("import java.util.List;"+"\r\n");
+        sb1.append("import org.springframework.dao.DataAccessException;"+"\r\n");
+        sb1.append("import org.springframework.http.HttpStatus;"+"\r\n");
+        sb1.append("import org.springframework.http.ResponseEntity;"+"\r\n");
 
         for (EntidadesPojo entidadPojo : toPojos) {
             String[] clavePojo = entidadPojo.getNombreClase().split("Pojo");
@@ -236,6 +242,10 @@ public class CreateControllerCapaPojo {
         sb2.append("   "+entidad.getNombreClase() + "Mapper "+ entidad.getNombreClase().toLowerCase() +"Mapper;"+"\r\n");
         sb2.append("\r\n");
 
+        sb2.append("    @Autowired"+"\r\n");
+        sb2.append("   MapperEntityRespone mapperEntityRespone;"+"\r\n");
+        sb2.append("\r\n");
+
 
         for (RelacionPojo relacion : entidad.getRelaciones()) {
             sb2.append("    @Autowired"+"\r\n");
@@ -265,14 +275,22 @@ public class CreateControllerCapaPojo {
             if (!atributos.getsId()) {
                 sb3.append("\r\n");
                 sb3.append("        @GetMapping(\"/Get"+atrubutoObjeto+"/{"+atrubutoObjeto+"}\")" +"\r\n");
-                sb3.append("        private "+entidad.getNombreClase()+" findBy"+atributoName+"(@PathVariable(\""+atrubutoObjeto+"\") "+atributos.getTipoDato()
+                sb3.append("        private  ResponseEntity<EntityRespone> findBy"+atributoName+"(@PathVariable(\""+atrubutoObjeto+"\") "+atributos.getTipoDato()
                         +"  "+atrubutoObjeto+") {" +"\r\n");
-                // String busca = (String) poderValidationService.validation(tipo);
                 sb3.append("        "+atributos.getTipoDato()+" busca = ("+atributos.getTipoDato()+") "+validationService+".validation("+atrubutoObjeto+");" + "\r\n");
-                sb3.append("            return "+entidad.getNombreClase().toLowerCase()+"Service.findBy"+atributoName +"(busca);"+"\r\n");
+                sb3.append("        try {"+"\r\n");
+                sb3.append("                EntityRespone entityRespone = mapperEntityRespone.setEntityTobj("+entidad.getNombreClase().toLowerCase()+"Service.findBy"+atributoName +"(busca));"+"\r\n");
+                sb3.append("                return new ResponseEntity<EntityRespone>(entityRespone, HttpStatus.OK);"+"\r\n");
+                sb3.append("             } catch (DataAccessException e) {"+"\r\n");
+                sb3.append("                 EntityRespone entityRespone = mapperEntityRespone.setEntityResponT(null, \"Ocurrio un error\", e.getMessage());"+"\r\n");
+                sb3.append("             return new ResponseEntity<EntityRespone>(entityRespone, HttpStatus.BAD_REQUEST);"+"\r\n");
                 sb3.append("        }"+"\r\n");
+                sb3.append("     }"+"\r\n");
             }
         }
+
+      //  ********************************HAY QUE PROBAR EL METODO LOOP ESCRITO**************************************************
+
 
         for (AtributoPojo atributo : listAtributo) {
 
@@ -282,16 +300,18 @@ public class CreateControllerCapaPojo {
             if (!atributo.getsId()) {
                 sb3.append("\r\n");
                 sb3.append("        @GetMapping(\"/Get"+atrubutoObjeto+"contain/{"+atrubutoObjeto+"}\")" +"\r\n");
-                sb3.append("        private List<"+entidad.getNombreClase()+"> findBy"+atributoName+"Contain(@PathVariable(\""+atrubutoObjeto+"\") "+atributo.getTipoDato()
+                sb3.append("        private ResponseEntity<EntityRespone> findBy"+atributoName+"Contain(@PathVariable(\""+atrubutoObjeto+"\") "+atributo.getTipoDato()
                         +"  "+atrubutoObjeto+") {" +"\r\n");
-                sb3.append("        "+atributo.getTipoDato()+" busca = ("+atributo.getTipoDato()+") "+validationService+".validation("+atrubutoObjeto+");" + "\r\n");
-                sb3.append("            return "+entidad.getNombreClase().toLowerCase()+"Service.findBy"+atributoName
-                        +"Containing(busca);"+"\r\n");
+                sb3.append("              "+atributo.getTipoDato()+" busca = ("+atributo.getTipoDato()+") "+validationService+".validation("+atrubutoObjeto+");" + "\r\n");
+                sb3.append("              EntityRespone entityRespone = mapperEntityRespone.setEntityT("
+                        +entidad.getNombreClase().toLowerCase()+"Service.findBy"+atributoName +"Containing(busca));"+"\r\n");
+                sb3.append("              return new ResponseEntity<EntityRespone>(entityRespone, HttpStatus.OK);"+"\r\n");
                 sb3.append("        }"+"\r\n");
             }
         }
         return sb3;
     }
+
 
 
     private StringBuilder createfindId(EntidadesPojo entidad){
@@ -406,7 +426,7 @@ public class CreateControllerCapaPojo {
         }
         return sb61;
     }
-
+// xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     private StringBuilder findByRelacionNoBidirecional(EntidadesPojo entidad){
 
         StringBuilder sb61 = new StringBuilder("\r\n");
@@ -418,18 +438,105 @@ public class CreateControllerCapaPojo {
 
             if (!relacion.getRelation().equals("ManyToMany") && !relacion.getRelation().equals("OneToMany")) {
                 sb61.append("\r\n");
-                sb61.append("        @PostMapping(\"/findRelacion\")" + "\r\n");
+                sb61.append("        @PostMapping(\"/find" + relacion.getNameRelacion() + "\")" + "\r\n");
+               // sb61.append("        @PostMapping(\"/findRelacion\")" + "\r\n");
+
+                sb61.append("        private ResponseEntity<EntityRespone> findRelacion"+relacion.getNameClassRelacion()+"(@RequestBody "
+                        + relacion.getNameClassRelacion()+ "Pojo " + relacion.getNameClassRelacion().toLowerCase()+ "){ " + "\r\n");
+
+        sb61.append("           EntityRespone entityRespone = mapperEntityRespone.setEntityT("
+                + entidad.getNombreClase().toLowerCase() + "Service.findByRelacion" +relacion.getNameClassRelacion()
+                +"("+ relacion.getNameClassRelacion().toLowerCase()+"Mapper.PojoToEntity("
+                      +relacion.getNameClassRelacion().toLowerCase()+"ValidationService.valida("
+                      + relacion.getNameClassRelacion().toLowerCase() + "))));"+"\r\n") ;
+
+                sb61.append("            return new ResponseEntity<EntityRespone>(entityRespone, HttpStatus.OK);" + "\r\n");
+                sb61.append("}"+"\r\n");
+            }
+        }
+        return sb61;
+    }
+  // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+}
+
+/*
+    @PostMapping("/findRelacionPiesas")
+    private ResponseEntity<EntityRespone> findRelacionPiesas(@RequestBody PiesasPojo piesas) {
+        EntityRespone entityRespone = mapperEntityRespone.setEntityT(aventureroService.findByRelacionPiesas(piesasMapper.PojoToEntity(piesasValidationService.valida(piesas))));
+        return new ResponseEntity<EntityRespone>(entityRespone, HttpStatus.OK);
+    }
+
+*/
+/*
+    private StringBuilder findByRelacionNoBidirecional(EntidadesPojo entidad){
+
+        StringBuilder sb61 = new StringBuilder("\r\n");
+        for (RelacionPojo relacion: entidad.getRelaciones()) {
+
+            String validationService = relacion.getNameRelacion().toLowerCase() +"ValidationService";
+            String mapperService = relacion.getNameRelacion().toLowerCase() +"Mapper";
+            String contenido  = mapperService +".PojoToEntity("+validationService+".valida("+relacion.getNameRelacion().toLowerCase()+"))";
+
+            if (!relacion.getRelation().equals("ManyToMany") && !relacion.getRelation().equals("OneToMany")) {
+                sb61.append("\r\n");
+                sb61.append("        @PostMapping(\"/find" + relacion.getNameRelacion() + "\")" + "\r\n");
+                // sb61.append("        @PostMapping(\"/findRelacion\")" + "\r\n");
+
                 sb61.append("        private List<" + entidad.getNombreClase() + "> findRelacion"+relacion.getNameClassRelacion()+"(@RequestBody "
                         + relacion.getNameClassRelacion()+ "Pojo " + relacion.getNameClassRelacion().toLowerCase()+ "){ " + "\r\n");
                 sb61.append("            return " + entidad.getNombreClase().toLowerCase()+ "Service.findByRelacion"
-                                            +relacion.getNameClassRelacion()+"(" + contenido + "); }" + "\r\n");
+                        +relacion.getNameClassRelacion()+"(" + contenido + "); }" + "\r\n");
                 sb61.append("\r\n");
             }
         }
         return sb61;
     }
 
-}
+*/
 
+
+//    private StringBuilder createLoop(EntidadesPojo entidad){
+//
+//        StringBuilder sb3 = new StringBuilder();
+//        List<AtributoPojo> listAtributos = entidad.getAtributos();
+//        List<AtributoPojo> listAtributo = entidad.getAtributos();
+//        String validationService = entidad.getNombreClase().toLowerCase() +"ValidationService";
+//
+//        for (AtributoPojo atributos : listAtributos) {
+//            String atributoName = atributos.getAtributoName().substring(0, 1).toUpperCase()
+//                    + atributos.getAtributoName().substring(1);
+//            String atrubutoObjeto = atributos.getAtributoName().toLowerCase();
+//
+//            if (!atributos.getsId()) {
+//                sb3.append("\r\n");
+//                sb3.append("        @GetMapping(\"/Get"+atrubutoObjeto+"/{"+atrubutoObjeto+"}\")" +"\r\n");
+//                sb3.append("        private "+entidad.getNombreClase()+" findBy"+atributoName+"(@PathVariable(\""+atrubutoObjeto+"\") "+atributos.getTipoDato()
+//                        +"  "+atrubutoObjeto+") {" +"\r\n");
+//                // String busca = (String) poderValidationService.validation(tipo);
+//                sb3.append("        "+atributos.getTipoDato()+" busca = ("+atributos.getTipoDato()+") "+validationService+".validation("+atrubutoObjeto+");" + "\r\n");
+//                sb3.append("            return "+entidad.getNombreClase().toLowerCase()+"Service.findBy"+atributoName +"(busca);"+"\r\n");
+//                sb3.append("        }"+"\r\n");
+//            }
+//        }
+//
+//        for (AtributoPojo atributo : listAtributo) {
+//
+//            String atributoName = atributo.getAtributoName().substring(0, 1).toUpperCase() + atributo.getAtributoName().substring(1);
+//            String atrubutoObjeto = atributo.getAtributoName().toLowerCase();
+//
+//            if (!atributo.getsId()) {
+//                sb3.append("\r\n");
+//                sb3.append("        @GetMapping(\"/Get"+atrubutoObjeto+"contain/{"+atrubutoObjeto+"}\")" +"\r\n");
+//                sb3.append("        private List<"+entidad.getNombreClase()+"> findBy"+atributoName+"Contain(@PathVariable(\""+atrubutoObjeto+"\") "+atributo.getTipoDato()
+//                        +"  "+atrubutoObjeto+") {" +"\r\n");
+//                sb3.append("        "+atributo.getTipoDato()+" busca = ("+atributo.getTipoDato()+") "+validationService+".validation("+atrubutoObjeto+");" + "\r\n");
+//                sb3.append("            return "+entidad.getNombreClase().toLowerCase()+"Service.findBy"+atributoName
+//                        +"Containing(busca);"+"\r\n");
+//                sb3.append("        }"+"\r\n");
+//            }
+//        }
+//        return sb3;
+//    }
 
 
