@@ -2,32 +2,26 @@ package com.alejandro.ana.pojos;
 
 public class RelacionPojo {
 
-	private Boolean mappedByRelacion;// nuevoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+	private Boolean mappedByRelacion;// nuevo
 	private String mappedBy; // a un no esta en uso
 	private Boolean bidireccional;/// no esta en uso aun
-
 	private String nameClassRelacionar; // clase padre
-
 	private String nameClassRelacion;// clase a relacionar con el padre
 	private String nameRelacion;
 	private String relation; // @OneToOne, @OneToMany, @ManyToOne, @OneToMany, @ManyToMany
-
 	private Boolean joinColumn;
 	private Boolean fetchType;
 	private String fetchTypes; // FetchType.LAZY, FetchType.EAGER
-
 	private String joinColumnName;
 	private Boolean isJoinTable;
 	private Boolean jointabaleTipo;
 	private String joinColumnNameReferencedColumnName;
  	private String JoinTableName;
 	private String joinColumnName2;
-
  	private String cascadeType;// all, delete, persist,
 	private Boolean orphanRemoval;
 
-	public RelacionPojo() {
-	}
+	public RelacionPojo() {	}
 
 	public Boolean getMappedByRelacion() {
 		return mappedByRelacion;

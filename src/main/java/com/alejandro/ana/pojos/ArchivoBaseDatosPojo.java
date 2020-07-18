@@ -15,7 +15,7 @@ public class ArchivoBaseDatosPojo {
 	private String proyectoName;
 	private String packageNames;
 	private String description;
-	// private Boolean createCapaPojoForEntitys;**************************************************************
+	private Boolean createCapaPojoForEntitys;
 
 	// para el pomxml
 	private Boolean wihtSegurity; //spring segurity o no
@@ -141,5 +141,13 @@ public class ArchivoBaseDatosPojo {
 
 	public void setDatabaseTest(Boolean databaseTest) {
 		this.databaseTest = databaseTest;
+	}
+
+	public Boolean getCreateCapaPojoForEntitys() {
+		return createCapaPojoForEntitys;
+	}
+
+	public void setCreateCapaPojoForEntitys(Boolean createCapaPojoForEntitys) {
+		this.createCapaPojoForEntitys = createCapaPojoForEntitys;
 	}
 }

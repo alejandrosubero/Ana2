@@ -1,5 +1,6 @@
 package com.alejandro.ana.ServiceImpl;
 
+import com.alejandro.ana.converter.ConvertEntityToPojo;
 import com.alejandro.ana.modelo.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -15,9 +16,13 @@ import com.alejandro.ana.services.GenerarInstanciasService;
 public class GenerarInstanciasServiceImpl implements GenerarInstanciasService  {
 
 
+
+	@Autowired
+	ConvertEntityToPojo convertEntityToPojo;
+
 	@Autowired
 	private Creador creador;
-	
+
 	@Autowired
 	private ArchivosBase archivosBase;
 
@@ -55,9 +60,13 @@ public class GenerarInstanciasServiceImpl implements GenerarInstanciasService  {
 
 	@Override
 	public boolean ejecutaBase(ArchivoBaseDatosPojo archivo) throws Exception {
-				
+
 		logger.info("Recuperendo nombre del proyecto y paquetes");
-		
+
+		if(archivo.getCreateCapaPojoForEntitys()){
+			archivo.setEntidades(convertEntityToPojo.startConvertEntityToPojo(archivo));
+		}
+
 		String proyectoName = archivo.getProyectoName(); 
 		String paquete = archivo.getPackageNames();
 		String descripcion = archivo.getDescription();
@@ -121,11 +130,13 @@ public class GenerarInstanciasServiceImpl implements GenerarInstanciasService  {
 
 		repositoriesServices.startCreacion(archivo, creador);
 		servicesImplimet.startCreacionImplement(archivo, creador);
-		createControllerCapaPojo.startCreacionControlles(archivo, creador);
-	//	createControlles.startCreacionControlles(archivo, creador);
-		createMapper.initiarCreateMapper(archivo, creador);
-		createValidation.startCreacion(archivo, creador);
-		entityResponseClass.startCreateEntityResponseClass(archivo, creador);
+
+		if(archivo.getCreateCapaPojoForEntitys()) {
+			createControllerCapaPojo.startCreacionControlles(archivo, creador);
+			createMapper.initiarCreateMapper(archivo, creador);
+			createValidation.startCreacion(archivo, creador);
+			entityResponseClass.startCreateEntityResponseClass(archivo, creador);
+		}else { createControlles.startCreacionControlles(archivo, creador);}
 
 		logger.info("Finalizo Creando Archivos de repositorios, servicios proyecto, mappers");
 		

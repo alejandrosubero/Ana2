@@ -29,7 +29,6 @@ public class CreateControllerCapaPojo {
     private String barra = "";
     private int relantizar = 100;
     private int relantizar2 = 200;
-
     private String clave = "pojo";
     private List<EntidadesPojo> toPojos = new ArrayList<>();
     private List<EntidadesPojo> toEntidad = new ArrayList<>();
@@ -149,14 +148,12 @@ public class CreateControllerCapaPojo {
             Thread.sleep(relantizar);
             String nombreArchivo = nameOfClass + ".java";
             String entidad_paquete = "controller";
-
             String direction = creador.getDireccionDeCarpeta() + proyectoName + barra + "src" + barra + "main" + barra
                     + "java" + barra + creador.getCom() + barra + creador.getPackageNames1() + barra + creador.getArtifact()
                     + barra + entidad_paquete;
 
             Thread.sleep(relantizar2);
             creador.crearArchivo(direction, escrito, nombreArchivo);
-
         } catch (Exception e) {
             logger.error(e);
         }
@@ -184,10 +181,8 @@ public class CreateControllerCapaPojo {
         sb1.append("import "+paquete+".validation."+entidad.getNombreClase()+"Validation;" + "\r\n");
         sb1.append("import "+paquete+".mapper."+entidad.getNombreClase()+"Mapper;" + "\r\n");
         sb1.append("import "+paquete+".service."+entidad.getNombreClase()+"Service;"+ "\r\n");
-
         sb1.append("import "+paquete+".mapper.MapperEntityRespone;"+ "\r\n");
         sb1.append("import "+paquete+".pojo.EntityRespone;"+ "\r\n");
-
         sb1.append("import org.springframework.web.bind.annotation.*;" + "\r\n");
         sb1.append("import org.springframework.beans.factory.annotation.Autowired;" + "\r\n");
         sb1.append("import java.util.List;"+"\r\n");
@@ -252,7 +247,7 @@ public class CreateControllerCapaPojo {
             sb2.append("    "+ relacion.getNameClassRelacion() + "Validation "+ relacion.getNameRelacion().toLowerCase() +"ValidationService;"+"\r\n");
             sb2.append("\r\n");
 
-            sb2.append("       @Autowired"+"\r\n");
+            sb2.append("    @Autowired"+"\r\n");
             sb2.append("    "+ relacion.getNameClassRelacion() + "Mapper "+ relacion.getNameRelacion().toLowerCase() +"Mapper;"+"\r\n");
             sb2.append("\r\n");
         }
@@ -289,14 +284,9 @@ public class CreateControllerCapaPojo {
             }
         }
 
-      //  ********************************HAY QUE PROBAR EL METODO LOOP ESCRITO**************************************************
-
-
         for (AtributoPojo atributo : listAtributo) {
-
             String atributoName = atributo.getAtributoName().substring(0, 1).toUpperCase() + atributo.getAtributoName().substring(1);
             String atrubutoObjeto = atributo.getAtributoName().toLowerCase();
-
             if (!atributo.getsId()) {
                 sb3.append("\r\n");
                 sb3.append("        @GetMapping(\"/Get"+atrubutoObjeto+"contain/{"+atrubutoObjeto+"}\")" +"\r\n");
@@ -313,40 +303,50 @@ public class CreateControllerCapaPojo {
     }
 
 
-
     private StringBuilder createfindId(EntidadesPojo entidad){
         String validationService = entidad.getNombreClase().toLowerCase() +"ValidationService";
         List<AtributoPojo> listAtributo = entidad.getAtributos();
         StringBuilder sb4 = new StringBuilder();
         sb4.append("\r\n");
         sb4.append("        @GetMapping(\"/Get" + entidad.getNombreClase() + "/{id}\")" + "\r\n");
-        sb4.append("          private " + entidad.getNombreClase() + " findById" + "(@PathVariable(\"id\") String id) {" + "\r\n");
-        sb4.append("            return " + entidad.getNombreClase().toLowerCase() +"Service.findById("+validationService+".valida_id(id));" + "\r\n");
-      //  sb4.append("            return " + entidad.getNombreClase().toLowerCase() + "Service.findById(id);" + "\r\n");
+        sb4.append("          private ResponseEntity<EntityRespone> findById" + "(@PathVariable(\"id\") String id) {" + "\r\n");
+        sb4.append("          EntityRespone entityRespone = mapperEntityRespone.setEntityTobj("
+                                                    + entidad.getNombreClase().toLowerCase() +"Service.findById("+validationService+".valida_id(id))); " + "\r\n");
+        sb4.append("             return new ResponseEntity<EntityRespone>(entityRespone, HttpStatus.OK);" + "\r\n");
         sb4.append("          }" + "\r\n");
         return sb4;
     }
 
-
+//    @GetMapping("/GetAventurero/{id}")
+//    private ResponseEntity<EntityRespone> findById(@PathVariable("id") String id) {
+//        EntityRespone entityRespone = mapperEntityRespone.setEntityTobj(aventureroService.findById(aventureroValidationService.valida_id(id)));
+//        return new ResponseEntity<EntityRespone>(entityRespone, HttpStatus.OK);
+//    }
 
     private StringBuilder createfindAll(EntidadesPojo entidad){
         StringBuilder sb5 = new StringBuilder();
         sb5.append("\r\n");
         sb5.append("        @GetMapping(\"/GetAll" + entidad.getNombreClase() + "\")" + "\r\n");
-        sb5.append("        private  List<" + entidad.getNombreClase() + "> getAll"+entidad.getNombreClase()+"(){" + "\r\n");
-        sb5.append("            return " + entidad.getNombreClase().toLowerCase() + "Service.getAll" + entidad.getNombreClase() + "();}" + "\r\n");
+        sb5.append("        private  ResponseEntity<EntityRespone> getAll"+entidad.getNombreClase()+"(){" + "\r\n");
+        sb5.append("        EntityRespone entityRespone = mapperEntityRespone.setEntityT("
+                                                        + entidad.getNombreClase().toLowerCase() + "Service.getAll" + entidad.getNombreClase() + "());"+"\r\n");
+        sb5.append("            return new ResponseEntity<EntityRespone>(entityRespone, HttpStatus.OK); }" + "\r\n");
         sb5.append("\r\n");
         return sb5;
     }
 
+//    @GetMapping("/GetAllAventurero")
+//    private  ResponseEntity<EntityRespone> getAllAventurero(){
+//        EntityRespone entityRespone = mapperEntityRespone.setEntityT(aventureroService.getAllAventurero());
+//        return new ResponseEntity<EntityRespone>(entityRespone, HttpStatus.OK);
+//    }
+
 
     private StringBuilder createSalve(EntidadesPojo entidad){
-
         StringBuilder sb6 = new StringBuilder();
         String validationService = entidad.getNombreClase().toLowerCase() +"ValidationService";
         String mapperService =  entidad.getNombreClase().toLowerCase() +"Mapper";
         String contenido  = mapperService +".PojoToEntity("+validationService+".valida("+entidad.getNombreClase().toLowerCase()+"))";
-
         sb6.append("\r\n");
         sb6.append("        @PostMapping(\"/save\")" + "\r\n");
         sb6.append("        private Boolean  save" + entidad.getNombreClase() + "(@RequestBody "+entidad.getNombreClase()+"Pojo  "+entidad.getNombreClase().toLowerCase() +"){ " + "\r\n");
@@ -358,12 +358,10 @@ public class CreateControllerCapaPojo {
 
 
     private StringBuilder createUpdate(EntidadesPojo entidad){
-
         String validationService = entidad.getNombreClase().toLowerCase() +"ValidationService";
         String mapperService =  entidad.getNombreClase().toLowerCase() +"Mapper";
         String contenido  = mapperService +".PojoToEntity("+validationService+".valida("+entidad.getNombreClase().toLowerCase()+"))";
         StringBuilder sb7 = new StringBuilder();
-
         sb7.append("\r\n");
         sb7.append("        @PostMapping(\"/Update\")" + "\r\n");
         sb7.append("        private "+idTipoDato(entidad)+" Update" + entidad.getNombreClase()
@@ -380,12 +378,10 @@ public class CreateControllerCapaPojo {
         String validationService = entidad.getNombreClase().toLowerCase() +"ValidationService";
         String mapperService =  entidad.getNombreClase().toLowerCase() +"Mapper";
         String contenido  = mapperService +".PojoToEntity("+validationService+".valida("+entidad.getNombreClase().toLowerCase()+"))";
-
         StringBuilder sb8 = new StringBuilder();
         sb8.append("\r\n");
         sb8.append("        @PostMapping(\"/saveOrUpdate\")" + "\r\n");
         sb8.append("        private boolean saveOrUpdate" + entidad.getNombreClase()+ "(@RequestBody "+entidad.getNombreClase()+"Pojo  "+entidad.getNombreClase().toLowerCase() +"){ " + "\r\n");
-       // sb8.append("            return " + entidad.getNombreClase().toLowerCase()+ "Service.saveOrUpdate" +entidad.getNombreClase()+ "("+entidad.getNombreClase().toLowerCase()+"); }" + "\r\n");
         sb8.append("            return " + entidad.getNombreClase().toLowerCase() + "Service.saveOrUpdate"+entidad.getNombreClase()+ "("+contenido+" ); }" + "\r\n");
         return sb8;
     }
@@ -403,8 +399,6 @@ public class CreateControllerCapaPojo {
         return sb9;
     }
 
-
-//====================================================================================================================================================================//
 
     private StringBuilder findByRelacion(EntidadesPojo entidad){
         StringBuilder sb61 = new StringBuilder("\r\n");
@@ -426,40 +420,33 @@ public class CreateControllerCapaPojo {
         }
         return sb61;
     }
-// xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
     private StringBuilder findByRelacionNoBidirecional(EntidadesPojo entidad){
 
         StringBuilder sb61 = new StringBuilder("\r\n");
         for (RelacionPojo relacion: entidad.getRelaciones()) {
-
             String validationService = relacion.getNameRelacion().toLowerCase() +"ValidationService";
             String mapperService = relacion.getNameRelacion().toLowerCase() +"Mapper";
             String contenido  = mapperService +".PojoToEntity("+validationService+".valida("+relacion.getNameRelacion().toLowerCase()+"))";
-
             if (!relacion.getRelation().equals("ManyToMany") && !relacion.getRelation().equals("OneToMany")) {
                 sb61.append("\r\n");
                 sb61.append("        @PostMapping(\"/find" + relacion.getNameRelacion() + "\")" + "\r\n");
-               // sb61.append("        @PostMapping(\"/findRelacion\")" + "\r\n");
-
                 sb61.append("        private ResponseEntity<EntityRespone> findRelacion"+relacion.getNameClassRelacion()+"(@RequestBody "
                         + relacion.getNameClassRelacion()+ "Pojo " + relacion.getNameClassRelacion().toLowerCase()+ "){ " + "\r\n");
-
-        sb61.append("           EntityRespone entityRespone = mapperEntityRespone.setEntityT("
-                + entidad.getNombreClase().toLowerCase() + "Service.findByRelacion" +relacion.getNameClassRelacion()
-                +"("+ relacion.getNameClassRelacion().toLowerCase()+"Mapper.PojoToEntity("
-                      +relacion.getNameClassRelacion().toLowerCase()+"ValidationService.valida("
-                      + relacion.getNameClassRelacion().toLowerCase() + "))));"+"\r\n") ;
-
+                sb61.append("           EntityRespone entityRespone = mapperEntityRespone.setEntityT("
+                                         + entidad.getNombreClase().toLowerCase() + "Service.findByRelacion" +relacion.getNameClassRelacion()
+                                                +"("+ relacion.getNameClassRelacion().toLowerCase()+"Mapper.PojoToEntity("
+                                                      +relacion.getNameClassRelacion().toLowerCase()+"ValidationService.valida("
+                                                          + relacion.getNameClassRelacion().toLowerCase() + "))));"+"\r\n") ;
                 sb61.append("            return new ResponseEntity<EntityRespone>(entityRespone, HttpStatus.OK);" + "\r\n");
                 sb61.append("}"+"\r\n");
             }
         }
         return sb61;
     }
-  // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 }
-
+// xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 /*
     @PostMapping("/findRelacionPiesas")
     private ResponseEntity<EntityRespone> findRelacionPiesas(@RequestBody PiesasPojo piesas) {
@@ -539,4 +526,26 @@ public class CreateControllerCapaPojo {
 //        return sb3;
 //    }
 
+//    private StringBuilder createfindId(EntidadesPojo entidad){
+//        String validationService = entidad.getNombreClase().toLowerCase() +"ValidationService";
+//        List<AtributoPojo> listAtributo = entidad.getAtributos();
+//        StringBuilder sb4 = new StringBuilder();
+//        sb4.append("\r\n");
+//        sb4.append("        @GetMapping(\"/Get" + entidad.getNombreClase() + "/{id}\")" + "\r\n");
+//        sb4.append("          private " + entidad.getNombreClase() + " findById" + "(@PathVariable(\"id\") String id) {" + "\r\n");
+//        sb4.append("            return " + entidad.getNombreClase().toLowerCase() +"Service.findById("+validationService+".valida_id(id));" + "\r\n");
+//        //  sb4.append("            return " + entidad.getNombreClase().toLowerCase() + "Service.findById(id);" + "\r\n");
+//        sb4.append("          }" + "\r\n");
+//        return sb4;
+//    }
 
+
+//    private StringBuilder createfindAll(EntidadesPojo entidad){
+//        StringBuilder sb5 = new StringBuilder();
+//        sb5.append("\r\n");
+//        sb5.append("        @GetMapping(\"/GetAll" + entidad.getNombreClase() + "\")" + "\r\n");
+//        sb5.append("        private  List<" + entidad.getNombreClase() + "> getAll"+entidad.getNombreClase()+"(){" + "\r\n");
+//        sb5.append("            return " + entidad.getNombreClase().toLowerCase() + "Service.getAll" + entidad.getNombreClase() + "();}" + "\r\n");
+//        sb5.append("\r\n");
+//        return sb5;
+//    }
