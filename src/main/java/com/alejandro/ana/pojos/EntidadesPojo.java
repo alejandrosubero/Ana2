@@ -9,8 +9,10 @@ public class EntidadesPojo {
 	private String nombreClase;
 	private String nombreTabla;
 	private String paquete;
+	private Boolean delete;
 	private List<AtributoPojo> atributos = new ArrayList<>();
     private List<RelacionPojo> relaciones = new ArrayList<>();
+
 
 	public EntidadesPojo() {}
 
@@ -18,7 +20,7 @@ public class EntidadesPojo {
 		return isEntity;
 	}
 
-	public void setIsEntity(Boolean isEntity) {
+	public void setIsEntity(Boolean isEntity ) {
 		this.isEntity = isEntity;
 	}
 
@@ -46,6 +48,14 @@ public class EntidadesPojo {
 		this.paquete = paquete;
 	}
 
+	public Boolean getDelete() {
+		return delete;
+	}
+
+	public void setDelete(Boolean delete) {
+		this.delete = delete;
+	}
+
 	public List<AtributoPojo> getAtributos() {
 		return atributos;
 	}
@@ -60,11 +70,5 @@ public class EntidadesPojo {
 
 	public void setRelaciones(List<RelacionPojo> relaciones) {
 		this.relaciones = relaciones;
-	}
-
-	@Override
-	public String toString() {
-		return "EntidadesPojo [isEntity=" + isEntity + ", nombreClase=" + nombreClase + ", nombreTabla=" + nombreTabla
-				+ ", paquete=" + paquete + ", atributos=" + atributos + ", relaciones=" + relaciones + "]";
 	}
 }

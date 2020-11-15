@@ -11,22 +11,26 @@ public class ArchivoBaseDatosPojo {
 
 	private String autor;
 	private String user;
-	private  String context;
+	private String context;
 	private String proyectoName;
 	private String packageNames;
 	private String description;
 	private Boolean createCapaPojoForEntitys;
+	private String prograntVersion;
+	private String artifact;
+
 
 	// para el pomxml
 	private Boolean wihtSegurity; //spring segurity o no
 	private Boolean dataBase; // true o false
 	private Boolean databaseTest; // usar databade test y Database
 	private String databaseName; // nombre de base de datos
-	private Integer tipoDatabase; // oracle = 2, Mysql = 1, h2 = 3.
+	private Integer tipoDatabase; // oracle = 2, Mysql = 1, h2 = 3., viene sql server = 4
     private Boolean nativeMysql; // usar generador nativo de mysql
-	private Double javaVersion;
+	private Double javaVersion;// 1.7 / 1.8 / 11
 	private List<EntidadesPojo> entidades;
-
+	private Boolean isToolActive;
+	private ToolClassPojo toolClassPojo;
 
 	public ArchivoBaseDatosPojo() {	}
 
@@ -150,4 +154,40 @@ public class ArchivoBaseDatosPojo {
 	public void setCreateCapaPojoForEntitys(Boolean createCapaPojoForEntitys) {
 		this.createCapaPojoForEntitys = createCapaPojoForEntitys;
 	}
+
+	public ToolClassPojo getToolClassPojo() {
+		return toolClassPojo;
+	}
+
+	public void setToolClassPojo(ToolClassPojo toolClassPojo) {
+		this.toolClassPojo = toolClassPojo;
+	}
+
+	public String getPrograntVersion() {
+		return prograntVersion;
+	}
+
+	public void setPrograntVersion(String prograntVersion) {
+		this.prograntVersion = prograntVersion;
+	}
+
+	public String getArtifact() {
+		return artifact;
+	}
+
+	public void setArtifact(String artifact) {
+		this.artifact = artifact;
+	}
+
+	public Boolean getIsToolActive() {
+		return isToolActive;
+	}
+
+	public void setIsToolActive(Boolean isToolActive) {
+		this.isToolActive = isToolActive;
+	}
+
+	
+	
 }
+

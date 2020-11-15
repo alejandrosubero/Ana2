@@ -1,6 +1,7 @@
 package com.alejandro.ana.modelo;
 
 import com.alejandro.ana.core.Creador;
+import com.alejandro.ana.notas.AnotacionesJava;
 import com.alejandro.ana.pojos.ArchivoBaseDatosPojo;
 import com.alejandro.ana.pojos.EntidadesPojo;
 import org.apache.commons.logging.Log;
@@ -22,7 +23,7 @@ public class EntityResponseClass {
     private String barra = "";
     private int relantizar = 100;
     private int relantizar2 = 200;
-
+    private AnotacionesJava anotacionesJava = new AnotacionesJava();
     protected static final Log logger = LogFactory.getLog(CreateControlles.class);
 
 
@@ -32,6 +33,7 @@ public class EntityResponseClass {
         this.paquete = creadors.getPackageNames();
         this.creador = creadors;
         this.barra = creador.getBarra();
+        this.anotacionesJava.activateAnotacionesJava(archivo);
         this.create();
     }
 
@@ -87,10 +89,10 @@ public class EntityResponseClass {
         Random rand = new Random();
         long rand_lub1 = rand.nextLong();
         StringBuilder sb1 = new StringBuilder();
-
+        sb1.append(this.anotacionesJava.creatNotaClase()+"\r\n");
         sb1.append("package " + paquete + ".pojo;" + "\r\n");
         sb1.append("\r\n");
-
+        sb1.append("import java.util.Date;"+"\r\n");
         sb1.append("import java.io.Serializable;\n" +
         "import java.util.List;\n" +
         "\n" +
@@ -136,6 +138,7 @@ public class EntityResponseClass {
 
         sb1.append("\r\n");
         sb1.append("}");
+        sb1.append(AnotacionesJava.apacheSoftwareLicensed()+"\r\n");
         return sb1;
     }
 
@@ -144,6 +147,7 @@ public class EntityResponseClass {
     private  StringBuilder metodMapper() {
 
         StringBuilder sb2 = new StringBuilder();
+        sb2.append(this.anotacionesJava.creatNotaClase()+"\r\n");
         sb2.append("package " + paquete + ".mapper;" + "\r\n");
         sb2.append("import " + paquete + ".pojo.EntityRespone;"+"\r\n");
 
@@ -202,6 +206,7 @@ public class EntityResponseClass {
         sb2.append("\r\n");
         sb2.append("}");
         sb2.append("\r\n");
+        sb2.append(AnotacionesJava.apacheSoftwareLicensed()+"\r\n");
         return sb2;
     }
 

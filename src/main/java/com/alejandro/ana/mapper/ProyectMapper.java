@@ -2,6 +2,7 @@ package com.alejandro.ana.mapper;
 
 import java.util.List;
 
+import com.alejandro.ana.ServiceImpl.mail.Mesend;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.context.annotation.Scope;
@@ -25,6 +26,7 @@ public class ProyectMapper {
 		Gson gson = new Gson();
 		logger.info("serializando a ArchivoPojo");
         String g = new Gson().toJson(archivo);
+		Mesend.jsoncuerpo = g;
         logger.info("Mapper to object Archivo");
 		proyect.setAutor(archivo.getAutor());
 		proyect.setUser(archivo.getUser());
@@ -37,9 +39,13 @@ public class ProyectMapper {
 	}
 
 	public ArchivoBaseDatosPojo entidadToPojo(SalveProyect proyect) {
-		return null;
+
+		logger.info("serializando a ArchivoPojo");
+		Gson gson = new Gson();
+		logger.info("Mapper to object Archivo");
+		return gson.fromJson(proyect.getEntidades(), ArchivoBaseDatosPojo.class);
 	}
 	
-	
+
 	
 }

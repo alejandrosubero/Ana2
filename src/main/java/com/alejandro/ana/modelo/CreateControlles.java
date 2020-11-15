@@ -2,6 +2,7 @@ package com.alejandro.ana.modelo;
 
 
 import com.alejandro.ana.core.Creador;
+import com.alejandro.ana.notas.AnotacionesJava;
 import com.alejandro.ana.pojos.ArchivoBaseDatosPojo;
 import com.alejandro.ana.pojos.AtributoPojo;
 import com.alejandro.ana.pojos.EntidadesPojo;
@@ -27,7 +28,7 @@ public class CreateControlles {
     private String barra = "";
     private int relantizar = 100;
     private int relantizar2 = 200;
-
+    private AnotacionesJava anotacionesJava = new AnotacionesJava();
 
     protected static final Log logger = LogFactory.getLog(CreateControlles.class);
 
@@ -38,6 +39,7 @@ public class CreateControlles {
         this.paquete = creadors.getPackageNames();
         this.creador = creadors;
         this.barra = creador.getBarra();
+        this.anotacionesJava.activateAnotacionesJava(archivo);
         this.createController(entidades);
     }
 
@@ -66,6 +68,7 @@ public class CreateControlles {
         logger.info("Create Controller metodos  for Entity:  " + entidad.getNombreClase());
         try {
             Thread.sleep(relantizar);
+            sb.append(this.anotacionesJava.creatNotaClase()+"\r\n");
             sb.append("\r\n");
             sb.append(this.createImport(entidad));
 
@@ -98,8 +101,10 @@ public class CreateControlles {
             sb.append(this.createsaveOrUpdate(entidad));
             sb.append("\r\n");
 
-            Thread.sleep(relantizar);
-            sb.append(this.createDelete(entidad));
+            if(entidad.getDelete()) {
+                Thread.sleep(relantizar);
+                sb.append(this.createDelete(entidad));
+            }
 
             Thread.sleep(relantizar);
             sb.append(this.findByRelacion(entidad));
@@ -111,6 +116,7 @@ public class CreateControlles {
             e.printStackTrace();
         }
         sb.append("}"+"\r\n");
+        sb.append(AnotacionesJava.apacheSoftwareLicensed()+"\r\n");
         return sb;
     }
 
@@ -153,6 +159,7 @@ public class CreateControlles {
             sb1.append("import "+paquete+".service."+entidad.getNombreClase()+"Service;"+ "\r\n");
             sb1.append("import org.springframework.web.bind.annotation.*;" + "\r\n");
             sb1.append("import org.springframework.beans.factory.annotation.Autowired;" + "\r\n");
+            sb1.append( "import java.util.Date;"+"\r\n");
             sb1.append("\r\n");
             sb1.append("import java.util.List;"+"\r\n");
             for (RelacionPojo relacion : entidad.getRelaciones()) {

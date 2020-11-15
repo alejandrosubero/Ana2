@@ -36,11 +36,9 @@ public class Donwload {
 
 	protected static final Log logger = LogFactory.getLog(Donwload.class);
 
-
 	@Autowired
 	private ProyectoServiceImpl proyectoServiceImpl;
-	
-	
+
 	/*
 	 * Download Files|2
 	 */
@@ -48,16 +46,12 @@ public class Donwload {
 	public ResponseEntity<byte[]> getFiles(@PathVariable String id) {
 		
 		logger.info("inicia la ejecusion de getFiles recibe: " + id);
-
 		try {
 			Proyecto file = proyectoServiceImpl.findByName(id);
-
 			logger.info("inicia la respuesta ResponseEntity.ok() " + file.getName());
-
 			return ResponseEntity.ok()
-					.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getName()+".zip" + "\"")
-					.body(file.getPic());
-
+					.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\""
+							+ file.getName()+".zip" + "\"").body(file.getPic());
 		} catch (Exception e) {
 			return ResponseEntity.status(404).body(null);
 		}
@@ -65,19 +59,14 @@ public class Donwload {
 
 
 
-	
-
 	@RequestMapping(value = "/downloadLog/{archivo}")
 	public void getLogFile(HttpSession session, HttpServletResponse response, @PathVariable String archivo) {
-
 		String fileName = archivo + ".zip";
-		String filePathToBeServed = "C:\\Users\\crismarycastillo\\Desktop\\pruebas\\" + fileName;
+		String filePathToBeServed = "C:\\Users\\crismarycastillo\\Desktop\\pruebas\\" + fileName; //UBICACION DEL FILE
 		// String
 		// pathOutputZip
 		// complete file name with path;
-
 		try {
-
 			File fileToDownload = new File(filePathToBeServed);
 			InputStream inputStream = new FileInputStream(fileToDownload);
 			response.setContentType("application/force-download");
@@ -85,12 +74,11 @@ public class Donwload {
 			IOUtils.copy(inputStream, response.getOutputStream());
 			response.flushBuffer();
 			inputStream.close();
-
 		} catch (Exception e) {
-
 			e.printStackTrace();
 		}
 	}
+
 
 	// genera un txt y lo descarga
 	@RequestMapping(value = "/download", method = RequestMethod.GET)
@@ -111,7 +99,6 @@ public class Donwload {
 		responseHeaders.setContentType(MediaType.valueOf("text/html"));
 		responseHeaders.setContentLength(output.length);
 		responseHeaders.set("Content-disposition", "attachment; filename=filename.class");
-
 		return new ResponseEntity<byte[]>(output, responseHeaders, HttpStatus.OK);
 	}
 
@@ -122,12 +109,13 @@ public class Donwload {
 //   	String filepath = "C:\\Users\\Alejandro\\Desktop\\pruebas\\" + archivo;
 //// application/zip, application/octet-stream
 
+
 //@RequestMapping(value = "/order/{orderId}", method=RequestMethod.GET)
 //	public String getOrder(@PathVariable String orderId){
 //		return orderId;
 //	}
-//	
-//	
+
+
 //	@RequestMapping(value = "/files/{file_name}", method = RequestMethod.GET)
 //	@ResponseBody
 //	public FileSystemResource getFile(@PathVariable("file_name") String fileName) {

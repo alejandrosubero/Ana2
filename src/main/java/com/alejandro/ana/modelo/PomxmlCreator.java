@@ -1,6 +1,7 @@
 package com.alejandro.ana.modelo;
 
 import com.alejandro.ana.core.Creador;
+import com.alejandro.ana.pojos.ArchivoBaseDatosPojo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.context.annotation.Scope;
@@ -21,11 +22,16 @@ public class PomxmlCreator {
     private Integer tipoDatabase; // oracle = 2, Mysql = 1, h2 = 3.
     private Double javaVersion;
     private Boolean databaseTest;
+    private ArchivoBaseDatosPojo archivo;
+    private Boolean isToolGetPost;
+    private boolean isToolArchivoMaster;
 
     protected static final Log logger = LogFactory.getLog(PomxmlCreator.class);
 
     public void iniciarPomxml(Creador creadors, Boolean wihtSegurityp, Boolean dataBasep,
-                              Integer tipoDatabasep, Double javaVersion, Boolean databaseTest) {
+                              Integer tipoDatabasep, Double javaVersion, Boolean databaseTest,
+                              Boolean isToolGetPost) {
+
         this.creador = creadors;
         this.proyectoName = creadors.getProyectoName();
         this.paquete = creadors.getPackageNames();
@@ -35,12 +41,31 @@ public class PomxmlCreator {
         this.tipoDatabase =tipoDatabasep;
         this.javaVersion = javaVersion;
         this.databaseTest= databaseTest;
+        this.isToolGetPost = isToolGetPost;
+        this.createPomxml();
+    }
+
+    public void iniciarPomxml2(ArchivoBaseDatosPojo archivo, Creador creadors) {
+
+        this.archivo = archivo;
+        this.creador = creadors;
+        this.proyectoName = archivo.getProyectoName();
+        this.paquete = creadors.getPackageNames();
+        this.barra =creador.getBarra();
+        this.wihtSegurity = archivo.getWihtSegurity();
+        this.dataBase = archivo.getDataBase();
+        this.tipoDatabase =archivo.getTipoDatabase();
+        this.javaVersion = archivo.getJavaVersion();
+        this.databaseTest= archivo.getDatabaseTest();
+        this.isToolGetPost = archivo.getToolClassPojo().getGetPostCreateTool();
+        this.isToolArchivoMaster = archivo.getToolClassPojo().getArchivosManamentTool();
+
         this.createPomxml();
     }
 
 
 
-    public void createPomxml(){
+    private void createPomxml(){
 
         String ax2="";
         String ax1="";
@@ -66,26 +91,26 @@ public class PomxmlCreator {
                     + "	<name>" + proyectoName + "</name>\r\n"
                     + "	<description>" + creador.getDescription() + "</description>\r\n"
                     + "\r\n");
-
+            String nombreArchivo = paquete+"."+proyectoName + "Application";
+            sb.append("<properties>"+"\r\n");
+            sb.append("         <java.version>"+javaVersion+"</java.version>"+"\r\n");
+            sb.append(" <maven.compiler.source>"+javaVersion+"</maven.compiler.source>"+"\r\n");
+            sb.append("<maven.compiler.target>"+javaVersion+"</maven.compiler.target>"+"\r\n");
+            sb.append("<!-- The main class to start by executing java -jar -->"+"\r\n");
+            sb.append("<start-class>"+nombreArchivo+"</start-class>"+"\r\n");
+            sb.append("</properties>"+"\r\n");
             sb.append("\r\n");
-            sb.append( "        <properties>"+"\r\n" +
-	                	"               <java.version>"+javaVersion+"</java.version>"+ "\r\n" +
-	                    "       </properties>"+ "\r\n" );
-
             sb.append("\r\n");
             sb.append("     <dependencies>\r\n");
-
 
             sb.append("		<dependency>" + "\r\n" +
                     "			<groupId>org.springframework.boot</groupId>"+ "\r\n" +
                     "			<artifactId>spring-boot-starter-data-jpa</artifactId>" + "\r\n" +
                     "		</dependency>" + "\r\n");
-
             sb.append("		<dependency>" + "\r\n" +
                      "			<groupId>org.springframework.boot</groupId>" + "\r\n" +
                      "			<artifactId>spring-boot-starter-mail</artifactId>" + "\r\n" +
                      "		</dependency>" + "\r\n");
-
          if(wihtSegurity){
              sb.append("       <dependency>" + "\r\n" +
                      "			<groupId>org.springframework.boot</groupId>" + "\r\n" +
@@ -109,7 +134,6 @@ public class PomxmlCreator {
                      "			<scope>runtime</scope>" + "\r\n" +
                      "			<optional>true</optional>" + "\r\n" +
                      "		</dependency>" +  "\r\n");
-
             if (databaseTest){
                 ax2 ="-->";
                 ax1="<!--";
@@ -131,13 +155,14 @@ public class PomxmlCreator {
                           ax1+"             <scope>runtime</scope>"+ ax2+ "\r\n" +
                           ax1+"         </dependency>" + ax2 +"\r\n" );
 
-              }else if (tipoDatabase == 3) {
+              }else if (tipoDatabase == 4) {
 		            sb.append(ax1+"         <dependency>" + ax2+ "\r\n" +
-                            ax1+"           <groupId>com.microsoft.sqlserver</groupId>" +ax2+ "\r\n" +
+                            ax1+"          <groupId>com.microsoft.sqlserver</groupId>" +ax2+ "\r\n" +
                             ax1+ "           <artifactId>mssql-jdbc</artifactId>" + ax2+"\r\n" +
-                            ax1+"           <scope>runtime</scope>" + ax2+"\r\n" +
+                            ax1+"             <version>8.4.0.jre11</version>" + ax2+"\r\n" +
                             ax1+ "       </dependency>" + ax2+ "\r\n" );
-              } else {
+
+              } else if (tipoDatabase == 3)  {
                   sb.append("       <dependency>"+ ax2+
                           ax1+"             <groupId>com.h2database</groupId>" + ax2+"\r\n" +
                           ax1+"             <artifactId>h2</artifactId>" + ax2 + "\r\n" +
@@ -147,11 +172,53 @@ public class PomxmlCreator {
             }
 
             if(databaseTest){
-                 sb.append("       <dependency>"+ "\r\n"+
-                         "             <groupId>com.h2database</groupId>" + "\r\n" +
-                            "             <artifactId>h2</artifactId>" + "\r\n" +
-                            "             <scope>runtime</scope>" + "\r\n" +
-                            "         </dependency>"+ "\r\n" );
+                sb.append("       <dependency>"+ "\r\n"+
+                        "             <groupId>com.h2database</groupId>" + "\r\n" +
+                        "             <artifactId>h2</artifactId>" + "\r\n" +
+                        "             <scope>runtime</scope>" + "\r\n" +
+                        "         </dependency>"+ "\r\n" );
+            }
+
+            if(isToolGetPost){
+                sb.append("    <dependency>\n" +
+                        "            <groupId>org.apache.httpcomponents</groupId>\n" +
+                        "            <artifactId>httpclient</artifactId>\n" +
+                        "            <version>4.5.8</version>\n" +
+                        "        </dependency>\n" +
+                        "        <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->\n" +
+                        "        <dependency>\n" +
+                        "            <groupId>com.google.code.gson</groupId>\n" +
+                        "            <artifactId>gson</artifactId>\n" +
+                        "            <version>2.8.5</version>\n" +
+                        "        </dependency>"+ "\r\n");
+            }
+
+            if(isToolArchivoMaster){
+                sb.append("\n" +
+                        "\t\t <dependency>\n" +
+                        "\t\t\t <groupId>net.lingala.zip4j</groupId>\n" +
+                        "\t\t\t <artifactId>zip4j</artifactId>\n" +
+                        "\t\t\t <version>1.3.2</version>\n" +
+                        "\t\t </dependency>\n");
+            }
+
+            // ak servidor soket
+            if(this.archivo.getToolClassPojo().getServerTcp() || this.archivo.getToolClassPojo().getServerUdp()){
+                sb.append("\n" +
+                        "\t\t <dependency>\n" +
+                        "\t\t\t<groupId>org.springframework.boot</groupId>\n" +
+                        "\t\t\t<artifactId>spring-boot-starter-websocket</artifactId>\n" +
+                        "\t\t</dependency>");
+            }
+
+            if(this.archivo.getToolClassPojo().getConverterHex()){
+                sb.append("\n" +
+                        "\t<!-- https://mvnrepository.com/artifact/javax.xml.bind/jaxb-api -->\n" +
+                        "\t\t<dependency>\n" +
+                        "\t\t\t<groupId>javax.xml.bind</groupId>\n" +
+                        "\t\t\t<artifactId>jaxb-api</artifactId>\n" +
+                        "\t\t\t<version>2.2.3</version>\n" +
+                        "\t\t</dependency>");
             }
 
             sb.append("<!-- https://mvnrepository.com/artifact/io.springfox/springfox-swagger-ui -->" + "\r\n" +

@@ -18,8 +18,6 @@ public class SalveProyect  implements Serializable {
 	 */
 	private static final long serialVersionUID = 556891258919453055L;
 
-	
-	
 //	   @Id
 //	   @Column(name = "id")
 //	   @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")

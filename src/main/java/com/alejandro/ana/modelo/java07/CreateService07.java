@@ -1,0 +1,220 @@
+package com.alejandro.ana.modelo.java07;
+
+import com.alejandro.ana.core.Creador;
+import com.alejandro.ana.notas.AnotacionesJava;
+import com.alejandro.ana.pojos.ArchivoBaseDatosPojo;
+import com.alejandro.ana.pojos.AtributoPojo;
+import com.alejandro.ana.pojos.EntidadesPojo;
+import com.alejandro.ana.pojos.RelacionPojo;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+
+@Scope("singleton")
+@Component
+public class CreateService07 {
+
+
+    // private String description;
+    private String proyectoName;
+    private String packageNames;
+    private List<EntidadesPojo> entidades;
+    private Creador creador;
+    private String barra = "";
+    private int relantizar = 100;
+    private int relantizar2 = 300;
+    private AnotacionesJava anotacionesJava = new AnotacionesJava();
+
+    protected static final Log logger = LogFactory.getLog(CreateService07.class);
+
+    public void startCreacion(ArchivoBaseDatosPojo archivo, Creador creadors) {
+
+        this.entidades = archivo.getEntidades();
+        this.proyectoName = archivo.getProyectoName();
+        this.packageNames = archivo.getPackageNames();
+        this.creador = creadors;
+        this.barra = creador.getBarra();
+        this.anotacionesJava.activateAnotacionesJava(archivo);
+        try {
+            this.create();
+        } catch (InterruptedException e) {
+            logger.error(" ERROR : " + e);
+            //	e.printStackTrace();
+        }
+    }
+
+
+    private void create() throws InterruptedException {
+
+        logger.info("inicia la creacion de los servicios07");
+        if (this.entidades.size() > 0) {
+            for (EntidadesPojo entidad : this.entidades) {
+                Thread.sleep(relantizar );
+                if(entidad.getIsEntity()) {
+                    logger.info("Inicia la creacion de Servicio 07" + entidad.getNombreClase());
+                    Thread.sleep(relantizar );
+                    this.createService(entidad);
+                }
+            }
+        }
+    }
+
+
+    private void createFileClass(String entidad_getNombreClase, String entidad_paquete, StringBuilder sb) throws InterruptedException {
+
+        Thread.sleep(relantizar);
+        String nameFile = entidad_getNombreClase + ".java";
+        //	sb.append("}\r\n");
+        String singleString = sb.toString();
+        String direction = creador.getDireccionDeCarpeta() + proyectoName + barra + "src" + barra + "main" + barra
+                + "java" + barra + creador.getCom() + barra + creador.getPackageNames1() + barra + creador.getArtifact()
+                + barra + entidad_paquete;
+        creador.crearArchivo(direction, singleString, nameFile);
+        logger.info("Finalizo la creacion de CreateFileClass" + "  NOMBRE = " + entidad_getNombreClase);
+    }
+
+
+    private  void createService(EntidadesPojo entidad ) throws InterruptedException {
+
+        StringBuilder sb2 = new StringBuilder("\r\n");
+        String cadenaOriginal="";
+        String atributoName = "";
+        String datoTipo = "";
+
+        List <AtributoPojo> listAtributos = entidad.getAtributos();
+        String nameOfClass =entidad.getNombreClase()+"Service";
+        logger.info("createService" + "  for Entity:  " + entidad.getNombreClase());
+
+        for (AtributoPojo atributoID : entidad.getAtributos()) {
+            if (atributoID.getsId()) {
+                datoTipo = atributoID.getTipoDato();
+            }
+        }
+        sb2.append(this.anotacionesJava.creatNotaClase() + "\r\n");
+        sb2.append("package " + packageNames + ".service ;\r\n"); // nombre del paquete hay
+        sb2.append("\r\n");
+        sb2.append( "import java.util.Date;"+"\r\n");
+        sb2.append("\r\n");
+        sb2.append("import java.util.ArrayList;");
+        sb2.append("\r\n");
+        sb2.append("import java.util.List;");
+        sb2.append("\r\n");
+        sb2.append("import " + packageNames + "." + entidad.getPaquete()+"."+ entidad.getNombreClase() + ";");
+
+        for (RelacionPojo relacion : entidad.getRelaciones()) {
+            sb2.append("import " + packageNames + "." + entidad.getPaquete() + "." + relacion.getNameClassRelacion()+";" +"\r\n");
+        }
+        sb2.append("\r\n");
+        sb2.append("\r\n");
+        sb2.append("\r\n");
+        sb2.append("public interface "+nameOfClass+"{\r\n ");
+        sb2.append("\r\n");
+
+        for (AtributoPojo atributos : listAtributos) {
+            if (!atributos.getsId()) {
+                cadenaOriginal = atributos.getAtributoName();
+                String primeraLetra = cadenaOriginal.substring(0, 1).toUpperCase();
+                String restoDeLaCadena = cadenaOriginal.substring(1);
+                atributoName = primeraLetra + restoDeLaCadena;
+                sb2.append("		public " + entidad.getNombreClase() + "  findBy" + atributoName + "(" + atributos.getTipoDato()
+                        + " " + atributos.getAtributoName() + ");"+"\r\n");
+                sb2.append("\r\n");
+            }
+        }
+
+        for (AtributoPojo atributos : listAtributos) {
+            if (!atributos.getsId()) {
+                cadenaOriginal = atributos.getAtributoName();
+                String primeraLetra = cadenaOriginal.substring(0, 1).toUpperCase();
+                String restoDeLaCadena = cadenaOriginal.substring(1);
+                atributoName = primeraLetra + restoDeLaCadena;
+                sb2.append("		public List<" + entidad.getNombreClase() + ">  findBy" + atributoName + "Containing(" + atributos.getTipoDato() + " " + atributos.getAtributoName() + ");"+"\r\n");
+                sb2.append("\r\n");
+            }
+        }
+        sb2.append("		public " + entidad.getNombreClase() + " findById"+ "("+ datoTipo+ " id);"+"\r\n");
+        sb2.append("		public boolean save"+entidad.getNombreClase()+"("+entidad.getNombreClase()+" "+entidad.getNombreClase().toLowerCase()+");"+"\r\n");
+        sb2.append("		public List<"+entidad.getNombreClase()+"> getAll"+entidad.getNombreClase()+"();"+"\r\n");
+        if (entidad.getDelete()) {
+            sb2.append("		public boolean delete"+entidad.getNombreClase()+"("+datoTipo+" id);"+ "\r\n");
+        }
+
+        sb2.append("		public boolean update"+entidad.getNombreClase()+"("+entidad.getNombreClase()+" "+entidad.getNombreClase().toLowerCase()+");"+"\r\n");
+        sb2.append(" 		public boolean saveOrUpdate"+entidad.getNombreClase()+"("+entidad.getNombreClase()+" "+entidad.getNombreClase().toLowerCase()+");"+"\r\n");
+        sb2.append("\r\n");
+
+
+        for (RelacionPojo relacion : entidad.getRelaciones()) {
+            if (relacion.getRelation().equals("ManyToMany") || relacion.getRelation().equals("OneToMany")) {
+                sb2.append("		public List<"+entidad.getNombreClase()+">  findBy" + relacion.getNameClassRelacion() + "Containing(" + relacion.getNameClassRelacion() + " " + relacion.getNameRelacion() + ");"+"\r\n");
+            }else{
+                sb2.append("		public List<"+entidad.getNombreClase()+">  findByRelacion"+relacion.getNameClassRelacion() +"("+ relacion.getNameClassRelacion() + " " + relacion.getNameClassRelacion().toLowerCase() + ");"+"\r\n");
+            }
+        }
+        sb2.append("}"+"\r\n");
+        sb2.append(AnotacionesJava.apacheSoftwareLicensed() + "\r\n");
+        Thread.sleep(relantizar );
+        this.createFileClass(nameOfClass, "service", sb2);
+    }
+
+}
+
+
+//
+//    private String metodo(StringBuilder sb, String nameOfClass, String numeral) {
+//        sb.append("		if (fileOptional"+numeral+".isPresent()) {"+"\r\n");
+//        sb.append("\r\n");
+//        sb.append("		try {"+"\r\n");
+//        sb.append("\r\n");
+//        sb.append("	logger.info(\"the proyect be updated\");"+"\r\n");
+//        sb.append("\r\n");
+//        sb.append("		"+nameOfClass+" proyectoBDA"+numeral+" = fileOptional.get();"+"\r\n");
+//        sb.append("\r\n");
+//        sb.append("		return proyectoBDA"+numeral+"; "+"\r\n");
+//        sb.append("		} catch (DataAccessException e) {  "+"\r\n");
+//        sb.append("		logger.error(\" ERROR : \" + e); "+"\r\n");
+//        sb.append("		}"+"\r\n");
+//        sb.append("  	}else { "+"\r\n");
+//        sb.append("		return new "+nameOfClass+"(); "+"\r\n");
+//        sb.append("		}"+"\r\n");
+//        sb.append("\r\n");
+//        return sb.toString();
+//    }
+//
+//
+//    private String metodTrycath(StringBuilder sb, String operacion, String operacionElse ) {
+//        sb.append("		try {"+"\r\n");
+//        sb.append("\r\n");
+//        sb.append(operacion);
+//        sb.append("\r\n");
+//        sb.append("		} catch (DataAccessException e) {"+"\r\n");
+//        sb.append("		logger.error(\" ERROR : \" + e);"+"\r\n");
+//        sb.append(operacionElse);
+//        sb.append("\r\n");
+//        return sb.toString();
+//    }
+//
+//
+//    private String metodoGeneric(StringBuilder sb, String nameOfClass, String numeral, String operacion, String operacionElse ) {
+//
+//        sb.append("		if (fileOptional"+numeral+".isPresent()) {"+"\r\n");
+//        sb.append("\r\n");
+//        sb.append("		try {"+"\r\n");
+//        sb.append("\r\n");
+//        sb.append("	logger.info(\"the proyect be updated\");"+"\r\n");
+//        sb.append("\r\n");
+//        sb.append("		"+nameOfClass+" proyectoBDA"+numeral+" = fileOptional"+numeral+".get();"+"\r\n");
+//        sb.append("\r\n");
+//        sb.append(operacion);
+//        sb.append("		} catch (DataAccessException e) {  "+"\r\n");
+//        sb.append("		logger.error(\" ERROR : \" + e); "+"\r\n");
+//        sb.append("		}"+"\r\n");
+//        sb.append("  	}else { "+"\r\n");
+//        sb.append(operacionElse);
+//        sb.append("		}"+"\r\n");
+//        sb.append("\r\n");
+//        return sb.toString();
+//    }

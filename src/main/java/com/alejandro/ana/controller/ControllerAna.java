@@ -1,14 +1,13 @@
 package com.alejandro.ana.controller;
 
+import com.alejandro.ana.services.ServicioGenerarproyectoRest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.dao.DataAccessException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import com.alejandro.ana.ServiceImpl.SaveProyectServiceImpl;
 import com.alejandro.ana.mapper.ProyectMapper;
@@ -24,7 +23,6 @@ public class ControllerAna {
 
 	protected static final Log logger = LogFactory.getLog(ControllerAna.class);
 	
-	
 	@Autowired
 	private GenerarInstanciasService instancia;
 
@@ -33,27 +31,69 @@ public class ControllerAna {
 	
 	@Autowired
 	private ProyectMapper mapper;
-	
-	
+
+	@Autowired
+	private ServicioGenerarproyectoRest servicioGenerarproyectoRest;
+
+
 	@GetMapping("/check")
 	public String buenosDias() {
-		
 		logger.info("Loading the test pages");
-		
 		return "<h1>--------------The Sevice is Run----------</h1>";
 	}
 
+
 	@PostMapping("/archivosBase")
 	public boolean createBaseApp(@RequestBody ArchivoBaseDatosPojo archivo) throws Exception {
-
 		logger.info("rescive datos del proyecto: " + archivo.getProyectoName());
-		
 		salveProyectService.saveProyectInternamente(mapper.pojoToEntity(archivo));
-		
-		return instancia.ejecutaBase(archivo);
-
+		return servicioGenerarproyectoRest.ejecutaBase(archivo);
+	//	return servicioGenerarproyectoRest.generarBase07(archivo);
 	}
-	
+
+
+//	@PostMapping("/salveUpdate")
+//	public boolean salveUpdate(@RequestBody ArchivoBaseDatosPojo archivo) throws Exception {
+//		logger.info("Rescive datos del proyecto a salvar: " + archivo.getProyectoName());
+//		salveProyectService.saveProyect(mapper.pojoToEntity(archivo));
+//		return instancia.ejecutaBase(archivo);
+//	}
+
+
+	@GetMapping("/GetProyectoU/{user}")
+	private ResponseEntity<ArchivoBaseDatosPojo> findByUser(@PathVariable("user") String  user) {
+		try {
+			ArchivoBaseDatosPojo archivo = mapper.entidadToPojo(salveProyectService.findByUser(user));
+			return new ResponseEntity<ArchivoBaseDatosPojo>(archivo, HttpStatus.OK);
+		} catch (DataAccessException e) {
+			ArchivoBaseDatosPojo archivo = null;
+			return new ResponseEntity<ArchivoBaseDatosPojo>( archivo, HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	@GetMapping("/GetProyectoN/{nombre}")
+	private ResponseEntity<ArchivoBaseDatosPojo> findBynombreProyectoNombre(@PathVariable("nombre") String nombre) {
+		try {
+			ArchivoBaseDatosPojo archivo = mapper.entidadToPojo(salveProyectService.findByProyectoName(nombre));
+			return new ResponseEntity<ArchivoBaseDatosPojo>(archivo, HttpStatus.OK);
+		} catch (DataAccessException e) {
+			ArchivoBaseDatosPojo archivo = null;
+			return new ResponseEntity<ArchivoBaseDatosPojo>( archivo, HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	@GetMapping("/GetProyectoA/{autor}")
+	private ResponseEntity<ArchivoBaseDatosPojo> findBynombreProyectoAutor(@PathVariable("autor") String autor) {
+		try {
+			ArchivoBaseDatosPojo archivo = mapper.entidadToPojo(salveProyectService.findByAutor(autor));
+			return new ResponseEntity<ArchivoBaseDatosPojo>(archivo, HttpStatus.OK);
+		} catch (DataAccessException e) {
+			ArchivoBaseDatosPojo archivo = null;
+			return new ResponseEntity<ArchivoBaseDatosPojo>(archivo, HttpStatus.BAD_REQUEST);
+		}
+	}
+
+
 }
 
 //

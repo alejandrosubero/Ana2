@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
 
+import com.alejandro.ana.pojos.ArchivoBaseDatosPojo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +24,11 @@ import com.alejandro.ana.modelo.OsEjecutandose;
 public class Creador {
 
 	
-	@Autowired
-	private OsEjecutandose os;
+	//@Autowired
+	//private OsEjecutandose os;
+
+	private int relantizar = 100;
+	private int relantizar2 = 200;
 
 	private  String context;
 	private String proyectoName = "";
@@ -49,7 +53,8 @@ public class Creador {
 	private int contador = 0;
 	private int contador2 = 0;
 
-	private String barra ="\\";
+	// private String barra ="//";
+	private String barra = java.nio.file.FileSystems.getDefault().getSeparator();
 	
 	private String sDirectorioTrabajo = System.getProperty("user.dir");
 	private String direccionDeCarpeta = sDirectorioTrabajo + barra+ "lib"+ barra;
@@ -58,9 +63,27 @@ public class Creador {
 	protected static final Log logger = LogFactory.getLog(Creador.class);
 
 	public Creador() {}
-	
 
-	public void setDatos(String proyectoName, String packageNames, String description) {
+	
+	public void setDatos(ArchivoBaseDatosPojo archivo) {
+		logger.info("Inicia Metodo setDatos()");
+
+		com ="";
+		artifact = archivo.getArtifact();
+		packageNames1 = archivo.getContext();
+		
+		this.setContext(archivo.getContext());
+		this.setDescription(archivo.getDescription());
+		this.setPackageNames(archivo.getPackageNames());
+		logger.info("// NOMBRE DEL PAQUETE?"+archivo.getPackageNames());// NOMBRE DEL PAQUETE?
+		this.setProyectoName(archivo.getProyectoName());
+
+		this.valoresPackage();
+		this.crearCarpeta();
+		this.prueba2();
+	}
+
+	public void setDato(String proyectoName, String packageNames, String description) {
 		logger.info("Inicia Metodo setDatos()");
 		this.proyectoName = proyectoName;
 		this.packageNames = packageNames;
@@ -68,45 +91,40 @@ public class Creador {
 	}
 
 	
+
+//	private String setPackageNames1() {
+//        String[] arrOfStr = this.packageNames.split("\\."); 
+//  
+//   return arrOfStr[1];
+//		
+//	}
+	
+	
+
 	public void valoresPackage() {
 
-		this.barra = os.datos_pc();
-		
-		logger.info("Inicia Metodo valoresPackage()");
-		
-		for (int i = 0; i < packageNames.indexOf(ch); i++) {
-			com = com + packageNames.charAt(i);
-		}
-		punto = 1;
-		for (int i = packageNames.indexOf(ch) + 1; i < packageNames.length(); i++) {
-			if (packageNames.charAt(i) != '.') {
-				if (artifact.equals("")) {
-					packageNames1 = packageNames1 + packageNames.charAt(i);
-					contador += 1;
-				}
-			} else {
-				punto += 1;
-				break;
+		//	this.barra = os.datos_pc();
+			logger.info("Inicia Metodo valoresPackage()");
+			for (int i = 0; i < packageNames.indexOf(ch); i++) {
+				com = com + packageNames.charAt(i);
 			}
-		}
-		contador2 = packageNames.indexOf(ch) + contador + 2;
-		for (int i = contador2; i < packageNames.length(); i++) {
-			if (packageNames.charAt(i) != '.') {
-				if (!packageNames1.equals("")) {
-					artifact = artifact + packageNames.charAt(i);
-				}
-			} else {
-				break;
-			}
+			punto = 1;
+	
+			
+			logger.info("PROYECT NAME: => "+ proyectoName);
+			logger.info("PACKAGE NAME => "+  packageNames);
+			logger.info("GRUP NAME: => "+ com + "." + packageNames1);
+			logger.info("ARTIFACT NAME: => "+ artifact);
+			logger.info("WORKING ROOT DIRECTORY : => "+ sDirectorioTrabajo);
+			logger.info("FOLDER ADDRESS: => "+ direccionDeCarpeta);
 		}
 
-//		logger.info("PROYECT NAME: => "+ proyectoName);
-//		logger.info("PACKAGE NAME => "+  packageNames);
-//		logger.info("GRUP NAME: => "+ com + "." + packageNames1);
-//		logger.info("ARTIFACT NAME: => "+ artifact);
-//		logger.info("WORKING ROOT DIRECTORY : => "+ sDirectorioTrabajo);
-//		logger.info("FOLDER ADDRESS: => "+ direccionDeCarpeta);
-	}
+	
+	
+	
+	
+	
+
 
 	public void crearCarpeta() {
 		
@@ -198,19 +216,19 @@ public class Creador {
 
 		try {
 			CopiarArchivo2(a1, b1);
-			Thread.sleep(300);
+			Thread.sleep(relantizar2);
 			CopiarArchivo2(a2, b2);
-			Thread.sleep(300);
+			Thread.sleep(relantizar2);
 			CopiarArchivo2(a3, b3);
-		//	Thread.sleep(300);
+		//	Thread.sleep(relantizar2);
 		//	CopiarArchivo2(a4, b4);
-			Thread.sleep(300);
+			Thread.sleep(relantizar2);
 			CopiarArchivo2(a5, b5);
-			Thread.sleep(300);
+			Thread.sleep(relantizar2);
 			CopiarArchivo2(a6, b6);
-			Thread.sleep(300);
+			Thread.sleep(relantizar2);
 			CopiarArchivo2(a7, b7);
-			Thread.sleep(300);
+			Thread.sleep(relantizar2);
 			CopiarArchivo2(a8, b8);
 		} catch (Exception e) {
 			logger.error(e);
@@ -316,20 +334,16 @@ public class Creador {
 		if (create_archivo.exists()) {
 			logger.info("THE File EXISTS");
 	//		JOptionPane.showMessageDialog(null, "el archivo existe");
-
 		} else {
 			logger.info("THE File DOES NOT EXIST IT WILL BE CREATED");
 			// JOptionPane.showMessageDialog(null, "el archivo no existe pero se creara");
 			create_carpeta.mkdirs();
-
 			try {
-
 				if (create_archivo.createNewFile()) {
 					FileWriter fw = new FileWriter(create_archivo);
 					BufferedWriter bw = new BufferedWriter(fw);
 					bw.write(contenido1);
 					bw.close();
-
 					logger.info("THE FILE WAS CREATED");
 					// JOptionPane.showMessageDialog(null, "el archivo fue creado");
 				} else {
@@ -425,3 +439,44 @@ public class Creador {
 		this.context = context;
 	}
 }
+
+
+//public void valoresPackage1() {
+//
+////	this.barra = os.datos_pc();
+//	
+//	logger.info("Inicia Metodo valoresPackage()");
+//	
+//	for (int i = 0; i < packageNames.indexOf(ch); i++) {
+//		com = com + packageNames.charAt(i);
+//	}
+//	punto = 1;
+//	for (int i = packageNames.indexOf(ch) + 1; i < packageNames.length(); i++) {
+//		if (packageNames.charAt(i) != '.') {
+//			if (artifact.equals("")) {
+//				packageNames1 = packageNames1 + packageNames.charAt(i);
+//				contador += 1;
+//			}
+//		} else {
+//			punto += 1;
+//			break;
+//		}
+//	}
+//	contador2 = packageNames.indexOf(ch) + contador + 2;
+//	for (int i = contador2; i < packageNames.length(); i++) {
+//		if (packageNames.charAt(i) != '.') {
+//			if (!packageNames1.equals("")) {
+//				artifact = artifact + packageNames.charAt(i);
+//			}
+//		} else {
+//			break;
+//		}
+//	}
+//
+//	logger.info("PROYECT NAME: => "+ proyectoName);
+//	logger.info("PACKAGE NAME => "+  packageNames);
+//	logger.info("GRUP NAME: => "+ com + "." + packageNames1);
+//	logger.info("ARTIFACT NAME: => "+ artifact);
+//	logger.info("WORKING ROOT DIRECTORY : => "+ sDirectorioTrabajo);
+//	logger.info("FOLDER ADDRESS: => "+ direccionDeCarpeta);
+//}

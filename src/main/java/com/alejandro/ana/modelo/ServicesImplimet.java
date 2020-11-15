@@ -12,11 +12,10 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
 
 import com.alejandro.ana.core.Creador;
+import com.alejandro.ana.notas.AnotacionesJava;
 import com.alejandro.ana.pojos.ArchivoBaseDatosPojo;
 import com.alejandro.ana.pojos.AtributoPojo;
 import com.alejandro.ana.pojos.EntidadesPojo;
-
-
 
 
 
@@ -32,7 +31,9 @@ public class ServicesImplimet {
 	private String barra = "";
 	private int relantizar = 100;
 	private int relantizar2 = 300;
+	private AnotacionesJava anotacionesJava = new AnotacionesJava();
 	protected static final Log logger = LogFactory.getLog(RepositoriesServices.class);
+
 
 	public void startCreacionImplement(ArchivoBaseDatosPojo archivo, Creador creadors) {
 
@@ -41,7 +42,8 @@ public class ServicesImplimet {
 		this.packageNames = archivo.getPackageNames();
 		this.creador = creadors;
 		this.barra = creador.getBarra();
-
+		this.anotacionesJava.activateAnotacionesJava(archivo);
+		
 		try {
 			this.crearImplemet();
 		} catch (InterruptedException e) {
@@ -51,7 +53,6 @@ public class ServicesImplimet {
 
 
 	private void crearImplemet() throws InterruptedException {
-
 		for (EntidadesPojo entidad : entidades) {
 			if (entidad.getIsEntity()) {
 				logger.info("Inicia la creacion de ServicioImpl ===>" + " Entidad Nombre: " + entidad.getNombreClase());
@@ -63,7 +64,6 @@ public class ServicesImplimet {
 
 
 	private String idTipoDato(EntidadesPojo entidad) {
-
 		List<AtributoPojo> listAtributos = entidad.getAtributos();
 		String datoTipo = "Integer";
 		for (AtributoPojo atributoID : listAtributos) {
@@ -76,7 +76,6 @@ public class ServicesImplimet {
 
 
 	private String metodTrycath(String operacion, String operacionElse) {
-
 		StringBuilder sb2 = new StringBuilder("\r\n");
 		sb2.append("				try {" + "\r\n");
 		sb2.append(operacion);
@@ -91,6 +90,7 @@ public class ServicesImplimet {
 	public StringBuilder createImport(String serviceName, String repositorieName, EntidadesPojo entidad) {
 		StringBuilder sb = new StringBuilder("\r\n");
 		// logger.info("createServiceImplement" + " paso 2 import for Entity:  " + entidad.getNombreClase());
+		
 		sb.append("package " + packageNames + ".serviceImplement ;\r\n");
 		sb.append("\r\n");
 		sb.append("import " + packageNames + ".service." + serviceName + ";\r\n");
@@ -98,6 +98,7 @@ public class ServicesImplimet {
 		sb.append("import java.util.Optional;" + "\r\n");
 		sb.append("import java.util.ArrayList;" + "\r\n");
 		sb.append("import java.util.List;" + "\r\n");
+		sb.append("import java.util.Date;"+"\r\n");
 		sb.append("import org.apache.commons.logging.Log;" + "\r\n");
 		sb.append("import org.apache.commons.logging.LogFactory;" + "\r\n");
 		sb.append("import org.springframework.beans.factory.annotation.Autowired;" + "\r\n");
@@ -181,7 +182,6 @@ public class ServicesImplimet {
 		sb.append("\r\n");
 		sb.append(this.metodContaining(entidad, repositorieNameOjecte, entidadNombre));
 		sb.append("\r\n");
-		sb.append("\r\n");
 		sb.append(this.ContainingRelacion(entidad, repositorieNameOjecte, entidadNombre));
 		sb.append("\r\n");
 		sb.append(this.ContainingRelacionNoBiDirectional(entidad, repositorieNameOjecte, entidadNombre));
@@ -224,27 +224,24 @@ public class ServicesImplimet {
 
 
 	private StringBuilder metodDelete(EntidadesPojo entidad, String repositorieNameOjecte, String entidadNombre) {
-
 		StringBuilder sbt = new StringBuilder("\r\n");
-		sbt.append("		@Override" + "\r\n");
-		sbt.append("		public boolean delete" + entidad.getNombreClase() + "( " + this.idTipoDato(entidad) + " id){"+ "\r\n");
-		// sbt.append("\r\n");
-		sbt.append("		logger.info(\"Delete Proyect\");" + "\r\n");
-		// sbt.append("\r\n");
-		sbt.append("		boolean clave = false;\r\n");
-		sbt.append("\r\n");
-		String operacionA = "				" + repositorieNameOjecte + ".deleteById(id);" + "\r\n" + "				clave = true;\r\n";
-		String operacionElseA = "				clave = false;\r\n";
-		sbt.append(this.metodTrycath(operacionA, operacionElseA));
-		//sbt.append("\r\n");
-		sbt.append("		return clave;\r\n");
-		sbt.append("	}\r\n");
+		if (entidad.getDelete()) {
+			sbt.append("		@Override" + "\r\n");
+			sbt.append("		public boolean delete" + entidad.getNombreClase() + "( " + this.idTipoDato(entidad) + " id){" + "\r\n");
+			sbt.append("		logger.info(\"Delete Proyect\");" + "\r\n");
+			sbt.append("		boolean clave = false;\r\n");
+			sbt.append("\r\n");
+			String operacionA = "				" + repositorieNameOjecte + ".deleteById(id);" + "\r\n" + "				clave = true;\r\n";
+			String operacionElseA = "				clave = false;\r\n";
+			sbt.append(this.metodTrycath(operacionA, operacionElseA));
+			sbt.append("		return clave;\r\n");
+			sbt.append("	}\r\n");
+		}
 		return sbt;
 	}
 
 
 	private StringBuilder metodUpdate(EntidadesPojo entidad, String repositorieNameOjecte, String entidadNombre) {
-
 		StringBuilder sf = new StringBuilder("\r\n");
 		sf.append("\r\n");
 		sf.append("		@Override" + "\r\n");
@@ -263,7 +260,6 @@ public class ServicesImplimet {
 	}
 
 	private StringBuilder metodfindById(EntidadesPojo entidad, String repositorieNameOjecte, String entidadNombre) {
-
 		StringBuilder sf = new StringBuilder("\r\n");
 		sf.append("\r\n");
 		sf.append("		@Override" + "\r\n");
@@ -275,9 +271,7 @@ public class ServicesImplimet {
 
 
 	private StringBuilder metodsaveOrUpdate(EntidadesPojo entidad, String repositorieNameOjecte, String entidadNombre) {
-
 		StringBuilder sf = new StringBuilder("\r\n");
-
 		sf.append("\r\n");
 		sf.append("		@Override" + "\r\n");
 		sf.append("		public boolean saveOrUpdate" + entidad.getNombreClase() + "(" + entidad.getNombreClase() + "  " + entidad.getNombreClase().toLowerCase() + " ){" + "\r\n");
@@ -285,7 +279,7 @@ public class ServicesImplimet {
 		sf.append("			logger.info(\"Update Proyect\");" + "\r\n");
 		// sf.append("\r\n");
 		sf.append("			boolean clave = false;\r\n");
-		sf.append("			logger.info(\"Starting getEmpresa\");" + "\r\n");
+		// sf.append("			logger.info(\"Starting getEmpresa\");" + "\r\n");
 		String numeraly = String.valueOf(2);
 		sf.append("			Optional<" + entidad.getNombreClase() + "> fileOptional" + numeraly + " = " + repositorieNameOjecte
 				+ ".findById(" + entidad.getNombreClase().toLowerCase() + ".getId());" + "\r\n");
@@ -304,7 +298,6 @@ public class ServicesImplimet {
 
 	private StringBuilder ContainingRelacion(EntidadesPojo entidad, String repositorieNameOjecte, String entidadNombre) {
 		StringBuilder sbx = new StringBuilder();
-
 		String getNombreClase = entidadNombre;
 		String getNombre = entidad.getNombreClase().toLowerCase();
 		logger.info("  " + entidad.getNombreClase());
@@ -319,13 +312,10 @@ public class ServicesImplimet {
 	}
 
 	private StringBuilder Relacionx(EntidadesPojo entidad,  String entidadNombre, RelacionPojo relacion) {
-
 		StringBuilder sbw = new StringBuilder();
 		String getNombreClase = entidadNombre;
 		String getNombre = entidad.getNombreClase().toLowerCase();
-
 		logger.info("  " + entidad.getNombreClase());
-
 			sbw.append("\r\n");
 			sbw.append("\r\n");
 			sbw.append("		@Override" + "\r\n");
@@ -334,7 +324,6 @@ public class ServicesImplimet {
 			sbw.append("			logger.info(\"Get allProyect\");" + "\r\n");
 			sbw.append(" 			List<" + getNombreClase + "> lista" + getNombreClase + " = new ArrayList<" + getNombreClase + ">();" + "\r\n");
 			sbw.append("			for (" + getNombreClase + " " + getNombre + " : this.getAll" + getNombreClase + "()) {" + "\r\n");
-
 			sbw.append("			for (" + relacion.getNameClassRelacion() + " " + relacion.getNameRelacion() + "x : "
 																			+ getNombre + ".get" + relacion.getNameRelacion() + "()) { " + "\r\n");
 			sbw.append("				if(" + getNombreClase + ".get" + relacion.getNameRelacion() + "().contains(" + relacion.getNameRelacion() + ".get" + relacion.getNameRelacion() + "())) {	" + "\r\n");
@@ -348,13 +337,8 @@ public class ServicesImplimet {
 		return sbw;
 	}
 
-
-
-
 	private StringBuilder ContainingRelacionNoBiDirectional(EntidadesPojo entidad, String repositorieNameOjecte, String entidadNombre) {
-
 		StringBuilder sv = new StringBuilder();
-
 		for (RelacionPojo relacion: entidad.getRelaciones()) {
 				if (!relacion.getRelation().equals("ManyToMany") && !relacion.getRelation().equals("OneToMany")) {
 					sv.append("\r\n");
@@ -371,7 +355,6 @@ public class ServicesImplimet {
 				}
 
 			if (relacion.getRelation().equals("ManyToMany") || relacion.getRelation().equals("OneToMany")) {
-
 					String getNombreClase = entidad.getNombreClase();
 					String getNombre = entidad.getNombreClase().toLowerCase();
 					sv.append("\r\n");
@@ -401,13 +384,10 @@ public class ServicesImplimet {
 
 
 	 private StringBuilder metodContaining(EntidadesPojo entidad, String repositorieNameOjecte, String entidadNombre) {
-
 		StringBuilder sbx = new StringBuilder();
 		String getNombreClase = entidadNombre;
 		String getNombre = entidad.getNombreClase().toLowerCase();
 		List<AtributoPojo> listAtributos = entidad.getAtributos();
-
-		// logger.info("  " + entidad.getNombreClase());
 
 		for (AtributoPojo atributo : listAtributos) {
 			String cadenaOriginal = atributo.getAtributoName();
@@ -416,7 +396,6 @@ public class ServicesImplimet {
 			String atributoName = primeraLetra + restoDeLaCadena;
 
 			if (!atributo.getsId()) {
-			//	logger.info(" " + entidad.getNombreClase());
 				sbx.append("\r\n");
 				sbx.append("		@Override" + "\r\n");
 				sbx.append("		public List<" + getNombreClase + "> findBy"+atributoName+"Containing(" + atributo.getTipoDato()+ " " + atributoName.toLowerCase()+"){" + "\r\n");
@@ -433,7 +412,6 @@ public class ServicesImplimet {
 
 
 	private void createFileClass(String entidad_getNombreClase, String entidad_paquete, StringBuilder sb) throws InterruptedException {
-
 		Thread.sleep(relantizar);
 		String nameFile = entidad_getNombreClase + ".java";
 		sb.append("}\r\n");
@@ -442,14 +420,12 @@ public class ServicesImplimet {
 				+ "java" + barra + creador.getCom() + barra + creador.getPackageNames1() + barra + creador.getArtifact()
 				+ barra + entidad_paquete;
 		creador.crearArchivo(direction, singleString, nameFile);
-		
 		logger.info("Finalizo la creacion de CreateFileClass" + "  NOMBRE = " + entidad_getNombreClase);
 	}
 
 
 	
 	private void createServiceImpl(EntidadesPojo entidad) throws InterruptedException {
-
 	//	logger.info("createServiceImplement" + " paso 1 for Entity:  " + entidad.getNombreClase());
 		StringBuilder sbh = new StringBuilder("\r\n");
 		String entidadNombre = entidad.getNombreClase();
@@ -457,10 +433,12 @@ public class ServicesImplimet {
 		String repositorieName = entidad.getNombreClase() + "Repository";
 		String repositorieNameOjecte = repositorieName.toLowerCase();
 		String serviceName = entidad.getNombreClase() + "Service";
+		sbh.append(this.anotacionesJava.creatNotaClase() + "\r\n");
 		sbh.append(this.createImport(serviceName, repositorieName ,entidad));	
 		sbh.append(this.createTitulo(nameOfClass, serviceName, repositorieName,  repositorieNameOjecte));
 		sbh.append(this.crearMetodoloop(entidad, repositorieNameOjecte));
 		sbh.append(this.metods(entidad, repositorieNameOjecte, entidadNombre));
+		sbh.append(AnotacionesJava.apacheSoftwareLicensed() + "\r\n");
 		Thread.sleep(relantizar);
 		this.createFileClass(nameOfClass, "serviceImplement", sbh);
 	}

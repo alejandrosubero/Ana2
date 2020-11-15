@@ -12,10 +12,6 @@ public interface SalveProyectRepository extends CrudRepository<SalveProyect, Lon
 	public Optional<SalveProyect> findByProyectoName(String name);
 	public Optional<SalveProyect> findByAutor(String autor);
 	public Optional<SalveProyect> findByUser(String user);
-	
-	// para usarlo para un find general 
-	
 	public Optional<SalveProyect> findByProyectoNameContaining(String name);
-	
 
 }

@@ -8,8 +8,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
+import com.alejandro.ana.pojos.ArchivoBaseDatosPojo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
@@ -39,11 +41,11 @@ public class ArchivosBase  {
 	private String barra ="";
 	private int relantizar = 300;
 	private String databaseName;
-	private Integer tipoDatabase; // oracle = 2, Mysql = 1, h2 = 3.
+	private Integer tipoDatabase; // oracle = 2, Mysql = 1, h2 = 3 , sql Server = 4
 	private Boolean nativeMysql; // usar generador nativo de mysql
 	private String descripcion;
 	private Boolean databaseTest; // usar databade test y Database
-
+	private ArchivoBaseDatosPojo archivo;
 	protected static final Log logger = LogFactory.getLog(ArchivosBase .class);
 	
 	public ArchivosBase() {	}
@@ -60,7 +62,38 @@ public class ArchivosBase  {
 		this.descripcion= creadors.getDescription();
 		this.databaseTest= databaseTest;
 	}
-	
+
+	public void iniciarArchivosBase2(ArchivoBaseDatosPojo archivo, Creador creadors, int numero) {
+		this.archivo = archivo;
+		this.creador = creadors;
+		this.proyectoName = archivo.getProyectoName();
+		this.paquete = creadors.getPackageNames();
+		this.barra =creador.getBarra();
+		this.databaseName = archivo.getDatabaseName();
+		this.tipoDatabase= archivo.getTipoDatabase();
+		this.nativeMysql= archivo.getNativeMysql();
+		this.descripcion= archivo.getDescription();
+		this.databaseTest= archivo.getDatabaseTest();
+		this.generate(numero);
+	}
+
+	private void generate(int numero) {
+
+		if(numero == 0){
+			this.createApplicationTests();
+			this.createApplication();
+			this.servletInitializer();
+		}
+
+		if (numero == 1) {
+			this.createApplicationPropeties();
+			this.createBanner();
+			this.createApplicationController();
+			this.createSwaggerClass();
+		}
+	}
+
+
 	
 	public String primeraLetraMayuscula(String cadena) {
 		String cadenaN = "";
@@ -81,12 +114,16 @@ public class ArchivosBase  {
 					+ "import org.springframework.boot.test.context.SpringBootTest;\r\n" + "\r\n"
 					+ "@SpringBootTest\r\n" + "class " + claseName + " {\r\n" + "\r\n" + "	@Test\r\n"
 					+ "	void contextLoads() {\r\n" + "	}\r\n" + "\r\n" + "}\r\n" + "";
+
+
 			String direccion = creador.getDireccionDeCarpeta() + proyectoName + barra +"src"+barra+"test"+barra+"java"+ barra + creador.getCom()
 					+ barra + creador.getPackageNames1() + barra + creador.getArtifact();
 			creador.crearArchivo(direccion, escrito, nombreArchivo);
 		} catch (Exception e) {	logger.error(e); }
 	}
-
+/*==========================================================================================================================
+*                                 reateApplication()*
+*============================================================================================================================*/
 	
 	
 	public void createApplication() {
@@ -94,7 +131,14 @@ public class ArchivosBase  {
 			Thread.sleep(relantizar);
 			String nombreArchivo = proyectoName + "Application.java"; // PruebaLaptopApplication.java
 			StringBuilder sb = new StringBuilder();
+
 			sb.append("package " + paquete + ";"+ "\r\n" + "\r\n");
+
+			if (this.archivo.getToolClassPojo().getServerTcp() || this.archivo.getToolClassPojo().getServerUdp()) {
+				sb.append("import " + paquete + ".serviceImplement.StartServer;"+ "\r\n");
+				sb.append( "import org.springframework.beans.factory.annotation.Autowired;"+"\r\n");
+			}
+
 			sb.append("import org.apache.commons.logging.LogFactory;"+ "\r\n");
 			sb.append("import org.springframework.boot.SpringApplication;"+ "\r\n");
 			sb.append("import org.springframework.boot.autoconfigure.SpringBootApplication;" + "\r\n");
@@ -107,20 +151,35 @@ public class ArchivosBase  {
 			sb.append("\r\n");
 			sb.append("		protected static final Log logger = LogFactory.getLog(" + proyectoName +"Application.class);"+ "\r\n");
 			sb.append("\r\n");
+
+			if (this.archivo.getToolClassPojo().getServerTcp() || this.archivo.getToolClassPojo().getServerUdp()) {
+				sb.append("@Autowired"+"\r\n");
+				sb.append("private static StartServer startServer;"+"\r\n");
+			}
+
+			sb.append("\r\n");
 			sb.append("		public static void main(String[] args) {" + "\r\n");
 			sb.append("\r\n");
 			sb.append("		logger.info(\"the document  Swagger is in link: ==>  http://localhost:1111/" + creador.getContext()+"/swagger-ui.html\");" + "\r\n");
 			sb.append("\r\n");
 			sb.append("			SpringApplication.run(" + proyectoName + "Application.class, args);"+ "\r\n"+ "\r\n");
 			sb.append("\r\n");
+
+			if (this.archivo.getToolClassPojo().getServerTcp() || this.archivo.getToolClassPojo().getServerUdp()) {
+				sb.append("			startServer.start();"+"\r\n");
+			}
+
 			sb.append("		logger.info(\"the document  Swagger is in link: ==>  http://localhost:1111/" + creador.getContext()+"/swagger-ui.html\");" + "\r\n");
 			sb.append( "	}" + "\r\n"+ "\r\n");
 			sb.append("}"+ "\r\n" + "\r\n");
+
 			String escrito1= sb.toString();
 			String direccion = creador.getDireccionDeCarpeta() + proyectoName + barra +"src"+barra+"main"+barra+ "java" + barra + creador.getCom()
 					+ barra + creador.getPackageNames1() + barra + creador.getArtifact();
 			creador.crearArchivo(direccion, escrito1, nombreArchivo);
-		} catch (Exception e) {	logger.error(e); }
+		} catch (Exception e) {
+			logger.error(e);
+		}
 	}
 
 	public void servletInitializer() {
@@ -238,7 +297,11 @@ public class ArchivosBase  {
 			creador.crearArchivo(direccion, escrito1, nombreArchivo);
 		} catch (Exception e) {	logger.error(e);	}
 	}
-
+/*==========================================================================================================================
+*
+*                                              ApplicationPropeties
+*
+* ===========================================================================================================================*/
 
 	public void createApplicationPropeties() {
 		try {
@@ -246,22 +309,26 @@ public class ArchivosBase  {
 			Thread.sleep(relantizar);
 			String nombreArchivo = "application.properties"; // application.properties
 			String ax = "";
+
 			if (databaseTest){ ax ="#";	}
+
 			sb.append("# this is the server port 1111 #"+ "\r\n" );
 			sb.append("server.port = 1111"+ "\r\n");
 			sb.append("server.servlet.context-path=/"+creador.getContext() + "\r\n");
 			sb.append("\r\n");
-			sb.append(ax + "spring.datasource.url=jdbc:mysql://localhost:3306/"+databaseName+"?serverTimezone=UTC"+"\r\n");
-			sb.append(ax + "spring.datasource.username="+"\r\n");
-			sb.append(ax + "spring.datasource.password ="+"\r\n");
-			sb.append("\r\n");
-			sb.append("#spring.jpa.generate-ddl=true" + "\r\n");
-			sb.append(ax + "spring.jpa.show-sql = false" + "\r\n");
-			sb.append(ax + "spring.jpa.hibernate.ddl-auto=update" +"\r\n");
-			sb.append("#spring.jpa.properties.hibernate.temp.use_jdbc_metadata_defaults=false" +"\r\n");
-			sb.append("\r\n");
 
 			if( tipoDatabase == 1) {
+				sb.append("\r\n");
+				sb.append(ax + "spring.datasource.url=jdbc:mysql://localhost:3306/"+databaseName+"?serverTimezone=UTC"+"\r\n");
+				sb.append(ax + "spring.datasource.username="+"\r\n");
+				sb.append(ax + "spring.datasource.password ="+"\r\n");
+				sb.append("\r\n");
+				sb.append("#spring.jpa.generate-ddl=true" + "\r\n");
+				sb.append(ax + "spring.jpa.show-sql = false" + "\r\n");
+				sb.append(ax + "spring.jpa.hibernate.ddl-auto=update" +"\r\n");
+				sb.append("#spring.jpa.properties.hibernate.temp.use_jdbc_metadata_defaults=false" +"\r\n");
+				sb.append("\r\n");
+
 				if (nativeMysql) {
 					sb.append("# Naming strategy"+ "\r\n");
 					sb.append(ax + "spring.jpa.hibernate.naming-strategy = org.hibernate.cfg.ImprovedNamingStrategy"+ "\r\n");
@@ -276,7 +343,9 @@ public class ArchivosBase  {
 					sb.append(ax + "spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.MySQL5Dialect" + "\r\n");
 					sb.append("#spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.MySQLMyISAMDialect" +"\r\n");
 				}
-			} else {
+			}
+
+			if( tipoDatabase == 2) {
 				sb.append("\r\n");
 				sb.append("#spring.jpa.properties.hibernate.dialect = " + "\r\n");
                 sb.append("# create ORACLE #"+"\r\n");
@@ -292,7 +361,31 @@ public class ArchivosBase  {
                 sb.append("#logging.level.=error"+"\r\n");
 				sb.append("\r\n");
 			}
-			if (databaseTest){
+
+			if( tipoDatabase == 4) {
+				sb.append("\r\n");
+				sb.append(ax+"spring.datasource.driverClassName=com.microsoft.sqlserver.jdbc.SQLServerDriver"+"\r\n");
+				sb.append(ax+"spring.datasource.url = jdbc:sqlserver://localhost:1433;databaseName="+databaseName+";integratedSecurity=true"+"\r\n");
+				sb.append(ax+"spring.datasource.username=alejandro"+"\r\n");
+				sb.append(ax+"spring.datasource.password=Root"+"\r\n");
+				sb.append("\r\n");
+				sb.append("#spring-jpa-sql"+"\r\n");
+				sb.append(ax+"spring.jpa.properties.hibernate.format_sql = true"+"\r\n");
+				sb.append(ax+"spring.jpa.show-sql=true"+"\r\n");
+				sb.append("\r\n");
+				sb.append("## Hibernate Properties"+"\r\n");
+				sb.append("# The SQL dialect makes Hibernate generate better SQL for the chosen database"+"\r\n");
+				sb.append(ax+"spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.SQLServer2012Dialect"+"\r\n");
+				sb.append("# spring.jpa.hibernate.dialect=org.hibernate.dialect.SQLServer2012Dialect"+"\r\n");
+				sb.append("\r\n");
+				sb.append("# Hibernate ddl auto (create, create-drop, validate, update)"+"\r\n");
+				sb.append(ax+"spring.jpa.hibernate.ddl-auto = update"+"\r\n");
+				sb.append("#spring.jpa.hibernate.ddl-auto = create-drop"+"\r\n");
+				sb.append("\r\n");
+			}
+
+
+			if (databaseTest || tipoDatabase == 3){
 				sb.append("\r\n");
 				sb.append("\r\n");
 				sb.append("#CONFIGURATION FOR TEST#" + "\r\n");
@@ -311,13 +404,15 @@ public class ArchivosBase  {
 				sb.append("#http://localhost:1111/"+creador.getContext()+"/h2-console" + "\r\n");
 				sb.append("\r\n");
 			}
+
 			sb.append("\r\n");
 			sb.append("\r\n");
 			sb.append("#SWAGGER URL #"+ "\r\n");
 			sb.append("#http://localhost:1111/"+creador.getContext()+"/swagger-ui.html"+ "\r\n");
 			sb.append("\r\n");
 			sb.append("\r\n");
-			 String escrito1 = sb.toString();
+
+			String escrito1 = sb.toString();
 			Thread.sleep(100);
 			String direccion = creador.getDireccionDeCarpeta() + proyectoName + barra +"src"+ barra +"main"+ barra +"resources"+ barra;
 			creador.crearArchivo(direccion, escrito1, nombreArchivo);

@@ -1,5 +1,6 @@
 package com.alejandro.ana.converter;
 
+
 import com.alejandro.ana.pojos.ArchivoBaseDatosPojo;
 import com.alejandro.ana.pojos.EntidadesPojo;
 import com.alejandro.ana.pojos.RelacionPojo;
@@ -26,6 +27,7 @@ public class ConvertEntityToPojo {
             if (entidad.getIsEntity()) {
                 EntidadesPojo pojo = new EntidadesPojo();
                 pojo.setIsEntity(false);
+                pojo.setDelete(entidad.getDelete());
                 pojo.setNombreClase(entidad.getNombreClase() + "Pojo");
                 pojo.setNombreTabla(entidad.getNombreTabla());
                 pojo.setPaquete("pojo");

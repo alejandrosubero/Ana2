@@ -9,6 +9,8 @@ import java.util.Date;
 
 import javax.swing.JOptionPane;
 
+import com.alejandro.ana.services.EnvioEmailService;
+import com.alejandro.ana.services.MensendService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +38,12 @@ public class AnadirCarpeta {
 
 	@Autowired
 	private ProyectoServiceImpl proyectoServiceImpl;
+
+	@Autowired
+	private MensendService mensendService;
+
+	@Autowired
+	private EnvioEmailService envioEmailService;
 
 	public void folderzip(String carpetaAcomprimir, String direccionDeCarpeta, String nombreArchivoZip) throws Exception {
 		logger.info("Inicia Metodo folderzip()");
@@ -78,59 +86,51 @@ public class AnadirCarpeta {
 		}
 	}
 
+	// salva un proyecto en formato zip a una base de datos
 	public Boolean salveProyecto(String direccionDeCarpeta, String nombreArchivoZip) {
 
 		boolean salveInfo = false;
-
 		logger.info("Inicia Metodo salveProyecto()");
-
 		logger.info("inicia la ejecusion de salveProyecto");
 		Proyecto proyecto = new Proyecto();
-
 		logger.info("se instancia el objeto tipo entidad Proyecto");
-
 		logger.info("inicia la recuperacion del path del proyecto +++++++");
 		String pathOutputZip = direccionDeCarpeta + nombreArchivoZip + ".zip"; // ruta y nombre del zip generar
 		logger.info("inicia la recuperacion del path del proyecto en:  " + pathOutputZip);
-
 		proyecto.setName(nombreArchivoZip);
 		proyecto.setMimetype("application/zip");
-
 		logger.info("inicia la generacion de el array de bytes del proyecto");
 		byte[] bic = readBytesFromFile(pathOutputZip);
 		proyecto.setPic(bic);
-
 		try {
 		logger.info("inicia el salvado del proyecto salveProyecto");
 		if (proyectoServiceImpl.saveProyecto(proyecto)) {
-			
 			logger.info("Proyecto salvado");	
 			logger.info("inicia el borrado de la carpeta");
-			
 			borrarFolder(direccionDeCarpeta + nombreArchivoZip);
 			logger.info("Carpeta base borrada");
-			
 			logger.info("inicia el borrado del archivo zip");
 			borrarFolder(pathOutputZip);
 			logger.info("Zip fue borrado");
 			salveInfo = true;
+
+			logger.info("Enviando Mail");
+			mensendService.sendMailResponse();// ejecuta el envio del correo
+			// envioEmailService.sendPreConfiguredMailR();
+			logger.info("Mail enviando...");
 		}
+
 	} catch (Exception e) {
 		logger.error("El proyecto no fue salvado");
 		// salveInfo = false;
 	}
-
 	//	logger.info("inicia el salvado del proyecto salveProyecto");
 	//	return proyectoServiceImpl.saveProyecto(proyecto);
-//
 	return salveInfo;
 	}
 
-	
-	
-	
-	public static byte[] readBytesFromFile(String filePaths) {
 
+	public static byte[] readBytesFromFile(String filePaths) {
 		logger.info("Inicia Metodo readBytesFromFile()");
 		logger.info("inicia la recuperacion del paht");
 		String filePath = filePaths; // String pathOutputZip

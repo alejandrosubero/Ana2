@@ -2,6 +2,7 @@ package com.alejandro.ana.modelo;
 
 
 import com.alejandro.ana.core.Creador;
+import com.alejandro.ana.notas.AnotacionesJava;
 import com.alejandro.ana.pojos.ArchivoBaseDatosPojo;
 import com.alejandro.ana.pojos.AtributoPojo;
 import com.alejandro.ana.pojos.EntidadesPojo;
@@ -29,6 +30,7 @@ public class CreateValidation {
     private String clave = "pojo";
     private List<EntidadesPojo> toPojos = new ArrayList<>();
     private List<EntidadesPojo> toEntidad = new ArrayList<>();
+    private AnotacionesJava anotacionesJava = new AnotacionesJava();
 
     protected static final Log logger = LogFactory.getLog(CreateValidation.class);
 
@@ -38,6 +40,7 @@ public class CreateValidation {
         this.packageNames = archivo.getPackageNames();
         this.creador = creadors;
         this.barra = creador.getBarra();
+        this.anotacionesJava.activateAnotacionesJava(archivo);
         this.create(this.entidades);
     }
 
@@ -87,6 +90,7 @@ public class CreateValidation {
 
         StringBuilder validations = new StringBuilder ();
         Thread.sleep(relantizar);
+        validations.append(this.anotacionesJava.creatNotaClase()+"\r\n");
         validations.append(this.createImport(entidad));
         Thread.sleep(relantizar);
         validations.append(this.cabeceraClase(entidad));
@@ -97,6 +101,7 @@ public class CreateValidation {
         Thread.sleep(relantizar);
         validations.append(this.metodovalidation(entidad));
         validations.append("}"+"\r\n");
+        validations.append(AnotacionesJava.apacheSoftwareLicensed()+"\r\n");
         return  validations;
     }
 
@@ -128,6 +133,7 @@ public class CreateValidation {
     sb0.append("import java.util.ArrayList;");
     sb0.append("\r\n");
     sb0.append("import java.util.List;");
+    sb0.append( "import java.util.Date;"+"\r\n");
     sb0.append("\r\n");
     sb0.append("import " + packageNames + "." + entidad.getPaquete()+"."+ entidad.getNombreClase() + ";");
     sb0.append("import java.util.regex.Pattern;");
@@ -171,6 +177,7 @@ private StringBuilder metodoValidad(EntidadesPojo entidad){
 
     StringBuilder sb2 = new StringBuilder ();
     String variable = entidad.getNombreClase().toLowerCase();
+
     sb2.append("        public "+entidad.getNombreClase()+"Pojo valida("+entidad.getNombreClase()+"Pojo "+variable+") {" + "\r\n");
     sb2.append("        "+entidad.getNombreClase()+"Pojo"+" pojo = null;"+"\r\n");
     sb2.append("        try {"+"\r\n");
@@ -179,12 +186,14 @@ private StringBuilder metodoValidad(EntidadesPojo entidad){
 
     for (int i=0; i< entidad.getAtributos().size(); i++) {
         String cadenaOriginal = entidad.getAtributos().get(i).getAtributoName();
-        String atributoName = cadenaOriginal.substring(0, 1).toUpperCase() + cadenaOriginal.substring(1);
+        String atributoName = cadenaOriginal.substring(0, 1).toUpperCase() + cadenaOriginal.substring(1).toLowerCase();
+
         sb2.append("        "+variable + ".get" + atributoName + "() != null");
         if (i < entidad.getAtributos().size() - 1) {
             sb2.append(" &&" + "\r\n");
         }
     }
+
     sb2.append("        ) {"+"\r\n");
     sb2.append("        pojo = "+variable+";"+"\r\n");
     sb2.append("         }"+"\r\n");
